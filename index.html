@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>六级词汇闪过 | Word Lists</title>
+    <style>
+        /* 基础变量定义 */
+        :root {
+            /* 背景色 */
+            --bg-color: #fcfaf8;
+            --card-bg: white;
+            --list-selector-bg: #fcfaf8;
+            
+            /* 文本色 */
+            --text-primary: #333;
+            --text-secondary: #666;
+            --btn-text: #000;
+            
+            /* 进度条 */
+            --progress-bg: #f1f1f1;
+            --progress-fill: #ff99cc;
+            
+            /* 功能按钮 */
+            --prev-btn: #cccccc;
+            --prev-btn-hover: #999999;
+            --show-btn: #ff99cc;
+            --show-btn-hover: #ff6699;
+            --next-btn: #42a5f5;
+            --next-btn-hover: #1876F3;
+            
+            /* 左侧按钮 */
+            --order-btn-disordered: var(--prev-btn);
+            --order-btn-disordered-hover: var(--prev-btn);
+            --order-btn-ordered: #b7e4c7;
+            --list-btn-active-bg: var(--card-bg);
+            --list-btn-active-text: #333;
+            
+            /* 其他 */
+            --border-color: #ccc;
+            --shadow: 0 6px 12px rgba(0,0,0,0.15);
+            --scrollbar-track: #f1f1f1;
+            --scrollbar-thumb: #bbb;
+            --scrollbar-thumb-hover: #999;
+        }
+
+        /* 深色模式变量 */
+        :root.dark {
+            /* 背景色 */
+            --bg-color: #2d2b3a;
+            --card-bg: #3a384c;
+            --list-selector-bg: #2d2b3a;
+            
+            /* 文本色 */
+            --text-primary: #f0f0f0;
+            --text-secondary: #ddd;
+            --btn-text: white;
+            
+            /* 进度条 */
+            --progress-bg: #4a485c;
+            --progress-fill: #d64187;
+            
+            /* 功能按钮 */
+            --prev-btn: #555;
+            --prev-btn-hover: #777;
+            --show-btn: #d64187;
+            --show-btn-hover: #b8326d;
+            --next-btn: #2563eb;
+            --next-btn-hover: #1d4ed8;
+            
+            /* 左侧按钮 */
+            --order-btn-disordered: var(--prev-btn);
+            --order-btn-disordered-hover: var(--prev-btn);
+            --order-btn-ordered: #166534;
+            --list-btn-active-bg: #3a384c;
+            --list-btn-active-text: #fff;
+            
+            /* 其他 */
+            --border-color: #555;
+            --shadow: 0 6px 12px rgba(0,0,0,0.3);
+            --scrollbar-track: #4a485c;
+            --scrollbar-thumb: #666;
+            --scrollbar-thumb-hover: #888;
+        }
+
+        /* 全局样式 */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            font-size: 1.2em;
+            min-height: 100vh;
+            position: relative;
+            color: var(--text-primary);
+        }
+
+        /* 主题切换按钮 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 20;
+            width: 120px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .theme-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        /* 左侧列表选择区 */
+        .list-selector {
+            width: 250px;
+            background-color: var(--list-selector-bg);
+            padding: 20px 0;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            z-index: 100;
+            transition: transform 0.3s ease;
+            opacity: 0.95;
+        }
+        .list-selector h3,
+        .list-btn-container,
+        .order-toggle-group,
+        .list-info {
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+        
+        .list-selector h3 {
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            text-align: center;
+        }
+        
+        .list-btn-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-sizing: border-box;
+        }
+        
+        .order-toggle-group {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: auto;
+            box-sizing: border-box;
+        }
+        
+        .list-info {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        /* 左侧按钮通用样式 */
+        .list-btn, .order-btn {
+            padding: 15px 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--list-selector-bg);
+            color: var(--text-secondary);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            width: 100%;
+            box-sizing: border-box;
+            min-height: 60px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .list-btn:hover, .list-btn.active,
+        .order-btn:hover, .order-btn.active {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-weight: bold;
+        }
+
+        /* 列表按钮样式 */
+        .list-btn:hover {
+            font-size: 20px;
+            background-color: var(--list-btn-active-bg);
+            color: var(--list-btn-active-text);
+        }
+        
+        .list-btn.active {
+            font-size: 22px;
+            background-color: var(--list-btn-active-bg);
+            color: var(--list-btn-active-text);
+        }
+
+        /* 顺序按钮样式 */
+        .order-btn:hover {
+            font-size: 20px;
+            color: var(--text-primary);
+        }
+        
+        .order-btn.active {
+            font-size: 22px;
+            color: var(--text-primary);
+        }
+        
+        .order-btn[data-order="disordered"]:hover,
+        .order-btn[data-order="disordered"].active {
+            background-color: var(--order-btn-disordered-hover);
+        }
+        
+        .order-btn[data-order="ordered"]:hover,
+        .order-btn[data-order="ordered"].active {
+            background-color: var(--order-btn-ordered);
+        }
+
+        /* 单词卡片样式 */
+        .card-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 5;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+        
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 800px;
+            padding: 40px 30px;
+            margin: 30px 0;
+            text-align: center;
+            min-height: 500px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+        
+        .progress-container {
+            flex-grow: 1;
+            height: 10px;
+            background-color: var(--progress-bg);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--progress-fill);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .word-counter {
+            font-size: 18px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            min-width: 120px;
+            text-align: right;
+        }
+        
+        .word {
+            font-size: 60px;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 30px;
+            line-height: 1.2;
+            word-break: break-word;
+        }
+        
+        .definition-wrapper {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin: 10px 0 20px;
+            padding: 15px 10px;
+            min-height: 180px;
+        }
+        
+        .definition {
+            font-size: 28px;
+            color: var(--text-secondary);
+            line-height: 1.3;
+            opacity: 0;
+            word-break: break-word;
+        }
+        
+        .definition.visible {
+            opacity: 1;
+            transition: opacity 0.2s ease;
+        }
+
+        /* 底部功能按钮 */
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: auto;
+            padding-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 15px 30px;
+            font-size: 20px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            min-width: 120px;
+            color: var(--btn-text);
+            flex: 1;
+            max-width: 200px;
+        }
+        
+        #prev-word {
+            background-color: var(--prev-btn);
+        }
+        
+        #prev-word:hover {
+            background-color: var(--prev-btn-hover);
+        }
+        
+        #show-definition {
+            background-color: var(--show-btn);
+        }
+        
+        #show-definition:hover {
+            background-color: var(--show-btn-hover);
+        }
+        
+        #next-word {
+            background-color: var(--next-btn);
+        }
+        
+        #next-word:hover {
+            background-color: var(--next-btn-hover);
+        }
+
+        /* 移动端菜单按钮 */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 25;
+            width: 50px;
+            height: 50px;
+            background-color: var(--card-bg);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .mobile-menu-toggle span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        /* 滚动条样式 */
+        .definition-wrapper::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .definition-wrapper::-webkit-scrollbar-track {
+            background: var(--scrollbar-track);
+            border-radius: 4px;
+        }
+        
+        .definition-wrapper::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+            border-radius: 4px;
+        }
+        
+        .definition-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--scrollbar-thumb-hover);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .card {
+                padding: 30px 20px;
+                min-height: 450px;
+            }
+            
+            .word {
+                font-size: 50px;
+            }
+            
+            .definition {
+                font-size: 24px;
+            }
+            
+            button {
+                padding: 12px 25px;
+                font-size: 18px;
+                min-width: 100px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            /* 移动端布局 */
+            .mobile-menu-toggle {
+                display: flex;
+            }
+            
+            .list-selector {
+                transform: translateX(-100%);
+                width: 280px;
+                padding: 20px 0;
+            }
+            
+            .list-selector.mobile-open {
+                transform: translateX(0);
+            }
+            
+            .card-container {
+                padding: 0 15px;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 100%;
+            }
+            
+            .card {
+                padding: 25px 20px;
+                min-height: 400px;
+                margin: 20px 0;
+            }
+            
+            .card-top {
+                flex-direction: column;
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+            
+            .progress-container {
+                width: 100%;
+            }
+            
+            .word-counter {
+                text-align: center;
+                min-width: auto;
+            }
+            
+            .word {
+                font-size: 40px;
+                margin-bottom: 20px;
+            }
+            
+            .definition {
+                font-size: 22px;
+            }
+            
+            .definition-wrapper {
+                min-height: 150px;
+                margin: 5px 0 15px;
+            }
+            
+            .buttons {
+                gap: 15px;
+            }
+            
+            button {
+                padding: 15px 20px;
+                font-size: 18px;
+                min-width: 90px;
+                max-width: none;
+                flex: 1;
+            }
+            
+            .theme-toggle {
+                top: 20px;
+                right: 20px;
+                width: 100px;
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .word {
+                font-size: 36px;
+            }
+            
+            .definition {
+                font-size: 20px;
+            }
+            
+            .card {
+                padding: 20px 15px;
+                min-height: 350px;
+            }
+            
+            button {
+                padding: 12px 15px;
+                font-size: 16px;
+                min-width: 80px;
+            }
+            
+            .buttons {
+                gap: 10px;
+            }
+            
+            .word-counter {
+                font-size: 16px;
+            }
+        }
+
+        /* 触摸设备优化 */
+        @media (hover: none) and (pointer: coarse) {
+            button {
+                min-height: 44px;
+            }
+            
+            .list-btn, .order-btn {
+                min-height: 44px;
+                padding: 12px 15px;
+            }
+            
+            /* 移除移动端上的hover效果 */
+            .list-btn:hover, .order-btn:hover {
+                font-size: inherit;
+                background-color: var(--list-selector-bg);
+                color: var(--text-secondary);
+            }
+            
+            .list-btn.active:hover, .order-btn.active:hover {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 移动端菜单按钮 -->
+    <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    
+    <!-- 主题切换按钮 -->
+    <button class="theme-toggle" id="theme-toggle">Dark</button>
+    
+    <!-- Left list selector -->
+    <div class="list-selector" id="list-selector">
+        <h3>Select Word List</h3>
+        <div class="list-btn-container">
+            <button class="list-btn active" data-list="Word List 1">Word List 1</button>
+            <button class="list-btn" data-list="Word List 2">Word List 2</button>
+        </div>
+        
+        <div class="order-toggle-group">
+            <button class="order-btn" data-order="disordered">Disordered</button>
+            <button class="order-btn active" data-order="ordered">Ordered</button>
+        </div>
+        <div class="list-info">
+            <div id="list-stats">Word List 1 (0 words)</div>
+        </div>
+    </div>
+    
+    <!-- Centered card container -->
+    <div class="card-container">
+        <div class="card">
+            <div class="card-top">
+                <div class="progress-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+                <div class="word-counter" id="word-counter"></div>
+            </div>
+            
+            <div class="word" id="current-word"></div>
+            <div class="definition-wrapper">
+                <div class="definition" id="current-definition"></div>
+            </div>
+            <div class="buttons">
+                <button id="prev-word">Previous</button>
+                <button id="show-definition">Display Definition</button>
+                <button id="next-word">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Word list data
+        const wordLists = {"Word List 1": [{"word": "bias", "definition": "n.偏见；v.使有偏见；"}, {"word": "analyze", "definition": "vt.分析，分解；"}, {"word": "burden", "definition": "n.担子，重担，负担；vt.给予负担或麻烦；"}, {"word": "urge", "definition": "vt.极力主张，强烈要求；n.刺激，冲动，迫切要求；"}, {"word": "urgent", "definition": "adj.紧急的，迫切的；"}, {"word": "athlete", "definition": "n.运动员；"}, {"word": "justice", "definition": "n.正义，公平，公正；"}, {"word": "justify", "definition": "v.证明...是正当的；"}, {"word": "behave", "definition": "vi.表现；v.表现得体；"}, {"word": "alter", "definition": "v.改变，更改；"}, {"word": "alternative", "definition": "adj.供选择的，选择性的，交替的；n.二中择一，供替代的选择；"}, {"word": "atmosphere", "definition": "n.大气(层)，空气，气氛，环境，大气压；"}, {"word": "hemisphere", "definition": "n.半球；"}, {"word": "catalog", "definition": "n.目录，系列；vt.为...编目录；"}, {"word": "category", "definition": "n.类别，范畴；"}, {"word": "bond", "definition": "n.结合（物），结合力，黏合（剂），联结，束缚，羁绊；"}, {"word": "faculty", "definition": "n.科，系，能力，全体教员，天赋；"}, {"word": "factor", "definition": "n.因素，要素，系数；"}, {"word": "factory", "definition": "n.工厂，制造厂；"}, {"word": "battery", "definition": "n.电池(组)，(器具等的)一组，一套，炮兵连；"}, {"word": "battle", "definition": "n.战斗；v.作战；"}, {"word": "cancer", "definition": "n.癌，癌症，肿瘤；"}, {"word": "alcohol", "definition": "n.酒精，酒；"}, {"word": "basis", "definition": "n.基础，原因，方式；"}, {"word": "database", "definition": "n.数据库，资料库；"}, {"word": "bacteria", "definition": "n.[pl]（[sing]bacterium）细菌；"}, {"word": "serve", "definition": "v.为...服务，供应；"}, {"word": "deserve", "definition": "v.应受，该得，值得；"}, {"word": "reserve", "definition": "n.储备，储存，自然保护区，预备队，缄默，[金融]储备金；vt.储备，保留，预约；vi.预订；"}, {"word": "pioneer", "definition": "n.先锋，拓荒者；vt.开辟，倡导，提倡；vi.作先驱；"}, {"word": "volunteer", "definition": "n.志愿者；vt.志愿；"}, {"word": "reform", "definition": "n.改革，改良，改正；vt.改革，革新，重新组成；vi.重组，改过；adj.改革的，改革教会的；"}, {"word": "former", "definition": "adj.从前的，以前的；"}, {"word": "formula", "definition": "n.公式，方案，配方；"}, {"word": "extreme", "definition": "adj.极端的，极度的，偏激的，尽头的；n.极端，末端，最大程度，极端的事物；"}, {"word": "external", "definition": "a.外部的，外面的，表面上的；"}, {"word": "superior", "definition": "a.较高的，上级的，有优势的，出众的；n.上级，长官；"}, {"word": "junior", "definition": "a.初级的；n.（中学或大学）三年级学生；"}, {"word": "disorder", "definition": "n.混乱，杂乱，骚乱，失调，疾病；"}, {"word": "display", "definition": "n.显示，陈列，炫耀，显示器；vt.显示，夸示；v.显示；"}, {"word": "dispute", "definition": "n.&v.辩论，争论，争吵，争端；"}, {"word": "distract", "definition": "vt.分散（注意力），使分心；"}, {"word": "distribute", "definition": "vt.分配，散布，分开，把...分类；"}, {"word": "discourage", "definition": "v.使气馁，使沮丧，阻碍；"}, {"word": "texture", "definition": "n.质地，纹理，结构，本质，实质；"}, {"word": "acupuncture", "definition": "n.针刺，针灸；"}, {"word": "architecture", "definition": "n.建筑学，建筑风格，建筑式样，架构；"}, {"word": "sculpture", "definition": "n.雕塑，雕刻，刻蚀；vt.雕塑，雕刻，刻蚀；vi.从事雕刻；"}, {"word": "structure", "definition": "n.结构，构造，建筑物；v.构造，建造；"}, {"word": "infrastructure", "definition": "n.基础结构，基础设施；"}, {"word": "leisure", "definition": "a.&n.空闲（的），闲暇（的），悠闲（的），安逸（的）；"}, {"word": "feature", "definition": "n.特征，容貌，特色，特写；v.以...为特色；"}, {"word": "decrease", "definition": "v.减少；"}, {"word": "deplete", "definition": "v.损耗，耗尽，使枯竭；"}, {"word": "detect", "definition": "v.发觉，发现，检定；"}, {"word": "decline", "definition": "v.拒绝，变弱，变小；n.消减；"}, {"word": "depend", "definition": "vi.依赖，依靠，取决于，相信，信赖；"}, {"word": "deposit", "definition": "v.存放，放下，使沉积；n.押金；"}, {"word": "desert", "definition": "v.放弃，离弃；n.沙漠；"}, {"word": "despite", "definition": "prep.不管，尽管，不论；"}, {"word": "detail", "definition": "n.细节，详情；vt.详述，细说；"}, {"word": "default", "definition": "vi.拖欠，不履行，不到场；n.违约，缺席，缺乏，系统默认值；vt.不履行，不参加（比赛等），对...处以缺席裁判；"}, {"word": "desire", "definition": "n.欲望，要求；v.想要，请求；"}, {"word": "declare", "definition": "vt.宣布，声明；"}, {"word": "define", "definition": "vt.定义，详细说明；"}, {"word": "delay", "definition": "n.耽搁，迟滞；v.使延误，使耽搁，延期，推迟；"}, {"word": "deliver", "definition": "v.传送，兑现；vt.发表，接生；"}, {"word": "demonstrate", "definition": "vt.证明，展示，论证；vi.示威；"}, {"word": "determine", "definition": "v.决心，决意，测定，查明；"}, {"word": "familiar", "definition": "a.熟悉的，通晓的，亲近的；n.熟客，密友；"}, {"word": "solar", "definition": "adj.太阳的，太阳系的，日光的；"}, {"word": "nuclear", "definition": "a.核的，核心的，原子能的，核动力的；"}, {"word": "scholar", "definition": "n.学者；"}, {"word": "seminar", "definition": "n.研讨会，研讨班；"}, {"word": "comment", "definition": "n.评论，解释，批评；v.评论；"}, {"word": "mental", "definition": "adj.精神的，智力的，心理上的；"}, {"word": "mention", "definition": "vt.提到，谈到，提及，论及，说起；n.提及，说起；"}, {"word": "remind", "definition": "vt.提醒，使想起；"}, {"word": "document", "definition": "n.文档；vt.记录；"}, {"word": "implement", "definition": "vt.实施，执行，实现，使生效；n.工具，器具，手段；"}, {"word": "monument", "definition": "n.纪念碑，纪念物，不朽的功业（著作）等；"}, {"word": "parliament", "definition": "n.议会，国会；"}], "Word List 2": [{"word": "rival", "definition": "n.竞争者，对手；v.竞争，对抗；a.竞争的；"}, {"word": "thrive", "definition": "vi.繁荣，兴旺，茁壮成长；"}, {"word": "cave", "definition": "n.洞穴；v.挖洞；"}, {"word": "barrel", "definition": "n.桶，一桶的量，大量，枪管，炮管，笔管，汽油桶；vi.快速移动；vt.把...装桶；"}, {"word": "barrier", "definition": "n.路障，障碍；"}, {"word": "circus", "definition": "n.马戏团，杂技团，马戏场，杂技场；"}, {"word": "satellite", "definition": "n.卫星，人造卫星；"}, {"word": "purchase", "definition": "v.买，购买；n.购买的物品；"}, {"word": "purpose", "definition": "n.目的，意向，决心，论题，意义；vt.意欲，企图；"}, {"word": "pursue", "definition": "v.追赶，追求，追踪；"}, {"word": "minimum", "definition": "n.最小值，最小化；adj.最小的；"}, {"word": "minister", "definition": "n.部长，大臣，牧师；vi.执行牧师职务，辅助或伺候某人；"}, {"word": "carbon", "definition": "n.[化]碳(元素符号C)，(一张)复写纸；"}, {"word": "cite", "definition": "vt.引用，传讯，想起，表彰；"}, {"word": "calorie", "definition": "n.卡路里，卡(热量单位)；"}, {"word": "clone", "definition": "n.无性繁殖，克隆，复制品；v.克隆；"}, {"word": "private", "definition": "adj.私人的，私立的；"}, {"word": "privilege", "definition": "n.特权，优待；vt.给与...特权，特免；"}, {"word": "civil", "definition": "adj.全民的，市民的，公民的，国民的，民间的，民事的，根据民法的，文职的，有礼貌的；"}, {"word": "philosophy", "definition": "n.哲学，人生观；"}, {"word": "sophisticated", "definition": "a.老于世故的，(仪器)精密的；"}, {"word": "coast", "definition": "vi.滑行，沿岸航行，不费力地取得成功；vt.沿...岸航行；n.海岸，滑坡；"}, {"word": "campaign", "definition": "n.战役，竞选活动；vi.参加活动；"}, {"word": "version", "definition": "n.版本，形式；"}, {"word": "reverse", "definition": "n.&v.颠倒，倒转，倒退，逆转；"}, {"word": "convert", "definition": "n.被改变宗教信仰的人；v.改变，转化；"}, {"word": "symptom", "definition": "n.症状，征候，征兆；"}, {"word": "syndrome", "definition": "n.综合病征，并存特性；"}, {"word": "prohibit", "definition": "vt.禁止，阻止；"}, {"word": "prompt", "definition": "v.促使，激起；a.立即的，及时的；"}, {"word": "profit", "definition": "n.利润，利益；v.有益；"}, {"word": "intelligent", "definition": "adj.聪明的，有才智的，智能的；"}, {"word": "interview", "definition": "v./n.接见，会见，采访，面试；"}, {"word": "entrepreneur", "definition": "n.企业家，创业人；"}, {"word": "enterprise", "definition": "n.公司，事业单位，进取心；"}, {"word": "interfere", "definition": "vi.干涉，妨碍，打扰；vt.冲突，介入；"}, {"word": "internal", "definition": "adj.内在的，国内的，体内的；"}, {"word": "cognitive", "definition": "adj.认知的，认识的；"}, {"word": "sensitive", "definition": "a.敏感的，体贴的，易生气的，棘手的；"}, {"word": "embrace", "definition": "vt.拥抱，信奉，皈依，包含；vi.拥抱；n.拥抱；"}, {"word": "enthusiasm", "definition": "n.热心，热情，热烈；"}, {"word": "enroll", "definition": "vt.登记，使加入，把...记入名册，使入伍；vi.参加，登记，注册，记入名册；"}, {"word": "envelope", "definition": "n.信封，封套，封皮；"}, {"word": "envelop", "definition": "vt.包封，遮盖，包围；"}, {"word": "ensure", "definition": "v.确保，担保；"}, {"word": "encourage", "definition": "vt.鼓励，支持，助长；"}, {"word": "endure", "definition": "v.忍耐，忍受，容忍；"}, {"word": "enhance", "definition": "v.提高，增加，改善；"}, {"word": "engage", "definition": "v.从事，参与，雇佣，引起···的注意；"}, {"word": "endorse", "definition": "vt.支持，赞同，代言；"}, {"word": "entail", "definition": "v.需要，牵涉，导致；"}, {"word": "merchant", "definition": "n.商人，批发商，店主；adj.商业的，商人的；"}, {"word": "tenant", "definition": "n.承租人，房客，佃户，居住者；vt.租借（常用于被动语态）；"}, {"word": "reluctant", "definition": "adj.不情愿的，勉强的，顽抗的；"}, {"word": "significant", "definition": "adj.有意义的，重大的，重要的；"}, {"word": "recognize", "definition": "v.认识，认出，承认；"}, {"word": "criticize", "definition": "v.批评，评论；"}, {"word": "vulnerable", "definition": "a.脆弱的，易受......伤害的；"}, {"word": "available", "definition": "adj.可用到的，可利用的，有用的，有空的，接受探访的；"}, {"word": "invisible", "definition": "a.隐形的，无形的；"}, {"word": "flexible", "definition": "a.易弯曲的，灵活的；"}, {"word": "responsible", "definition": "a.有责任的，应负责任的；"}, {"word": "setting", "definition": "n.背景，环境，装置；"}, {"word": "regarding", "definition": "prep.关于；"}, {"word": "motivate", "definition": "v.激发，刺激；"}, {"word": "incorporate", "definition": "vt.包含，吸收，体现，把...合并；vi.合并，混合，组成公司；adj.合并的，一体化的，组成公司的；"}, {"word": "illustrate", "definition": "v.为...作插图或图表，说明，阐明；"}, {"word": "navigate", "definition": "v.航海，导航，驾驶；"}, {"word": "indicate", "definition": "vt.指示，指出，象征，表明；"}, {"word": "investigate", "definition": "v.调查，研究；"}, {"word": "stimulate", "definition": "vt.刺激，激励，鼓舞；vi.起刺激作用；"}, {"word": "calculate", "definition": "vt.计算，估计，计划；"}, {"word": "celebrate", "definition": "vt.庆祝，祝贺，表扬，赞美；"}, {"word": "communicate", "definition": "v.交流，沟通，传达；"}, {"word": "dominate", "definition": "vt.控制，支配，占优势，在...中占主要地位；vi.占优势，处于支配地位；"}, {"word": "estimate", "definition": "v./n.估计，估价，评估；"}, {"word": "migrate", "definition": "v.迁移，移居；"}, {"word": "exaggerate", "definition": "v.夸张，夸大；"}, {"word": "ultimate", "definition": "adj.最终的，极限的，根本的；n.终极，根本，基本原则；"}, {"word": "immediate", "definition": "adj.立即的，直接的，最接近的；"}, {"word": "climate", "definition": "n.气候；"}, {"word": "undergraduate", "definition": "n.本科生；"}]};
+        let activeList = 'Word List 1';
+        let currentWords = wordLists[activeList];
+        let currentIndex = 0;
+        let isOrdered = true;
+        
+        // DOM元素
+        const themeToggle = document.getElementById('theme-toggle');
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const listSelector = document.getElementById('list-selector');
+        const html = document.documentElement;
+        
+        // 深色模式切换逻辑
+        function initTheme() {
+            if (localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                html.classList.add('dark');
+                themeToggle.textContent = 'Dark';
+            } else {
+                html.classList.remove('dark');
+                themeToggle.textContent = 'Light';
+            }
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            const isDark = html.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            themeToggle.textContent = isDark ? 'Dark' : 'Light';
+        });
+        
+        // 移动端菜单切换
+        mobileMenuToggle.addEventListener('click', () => {
+            listSelector.classList.toggle('mobile-open');
+        });
+        
+        // 点击菜单外部关闭菜单
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768 && 
+                !listSelector.contains(e.target) && 
+                !mobileMenuToggle.contains(e.target) &&
+                listSelector.classList.contains('mobile-open')) {
+                listSelector.classList.remove('mobile-open');
+            }
+        });
+        
+        // 窗口大小变化时调整布局
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                listSelector.classList.remove('mobile-open');
+            }
+        });
+        
+        // 更新进度条
+        function updateProgressBar() {
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = currentWords.length 
+                ? `${((currentIndex + 1) / currentWords.length) * 100}%` 
+                : '0%';
+        }
+        
+        // 更新列表统计信息
+        function updateListStats() {
+            document.getElementById('list-stats').textContent = 
+                `${activeList} (${currentWords.length} words)`;
+        }
+        
+        // 切换单词列表
+        function switchList(listName) {
+            activeList = listName;
+            currentWords = wordLists[activeList] || [];
+            currentIndex = 0;
+            
+            // 更新按钮激活状态
+            document.querySelectorAll('.list-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.list === listName);
+            });
+            
+            // 更新显示
+            updateListStats();
+            updateProgressBar();
+            document.getElementById('word-counter').textContent = currentWords.length 
+                ? `Word ${currentIndex + 1} / ${currentWords.length}` 
+                : '';
+            
+            // 加载单词
+            if (currentWords.length === 0) {
+                document.getElementById('current-word').textContent = 'No words in this list';
+                document.getElementById('current-definition').innerHTML = '';
+            } else {
+                currentWords = isOrdered ? [...currentWords] : [...currentWords].sort(() => Math.random() - 0.5);
+                displayCurrentWord();
+            }
+        }
+        
+        // 切换顺序/随机模式
+        function setOrder(orderType) {
+            isOrdered = orderType === 'ordered';
+            document.querySelectorAll('.order-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.order === orderType);
+            });
+            
+            switchList(activeList);
+        }
+        
+        // 更新按钮状态
+        function updateButtonStates() {
+            const prevBtn = document.getElementById('prev-word');
+            prevBtn.disabled = currentIndex === 0;
+            prevBtn.style.opacity = currentIndex === 0 ? '0.5' : '1';
+            prevBtn.style.cursor = currentIndex === 0 ? 'not-allowed' : 'pointer';
+        }
+        
+        // 显示当前单词
+        function displayCurrentWord() {
+            const wordEl = document.getElementById('current-word');
+            const defEl = document.getElementById('current-definition');
+            const counterEl = document.getElementById('word-counter');
+            const defWrapper = document.querySelector('.definition-wrapper');
+            
+            defEl.classList.remove('visible');
+            defWrapper.scrollTop = 0;
+            
+            wordEl.textContent = currentWords[currentIndex].word;
+            defEl.innerHTML = currentWords[currentIndex].definition.replace(/；/g, '；<br>');
+            counterEl.textContent = `Word ${currentIndex + 1} / ${currentWords.length}`;
+            
+            updateProgressBar();
+            updateButtonStates();
+        }
+        
+        // 显示定义
+        function showDefinition() {
+            document.getElementById('current-definition').classList.add('visible');
+        }
+        
+        // 上一个单词
+        function prevWord() {
+            const wordEl = document.getElementById('current-word');
+            // 检查是否正在显示完成信息
+            if (wordEl.textContent === 'Congratulations!') {
+                // 如果是，直接显示最后一个单词
+                displayCurrentWord();
+            } else if (currentIndex > 0) {
+                currentIndex--;
+                displayCurrentWord();
+            }
+        }
+        
+        // 下一个单词
+        function nextWord() {
+            if (currentWords.length > 0) {
+                if (currentIndex < currentWords.length - 1) {
+                    currentIndex++;
+                    displayCurrentWord();
+                } else {
+                    // 已经是最后一个单词，显示完成信息
+                    const wordEl = document.getElementById('current-word');
+                    const defEl = document.getElementById('current-definition');
+                    const counterEl = document.getElementById('word-counter');
+                    
+                    wordEl.textContent = 'Congratulations!';
+                    defEl.innerHTML = 'You have completed learning all the words in this word list!';
+                    counterEl.textContent = `100%`;
+                    
+                    // 保持下一个按钮可用，这样用户可以在返回后再次点击
+                    updateButtonStates();
+                    
+                    // 更新进度条为100%
+                    document.getElementById('progress-bar').style.width = '100%';
+                }
+            }
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            updateListStats();
+            updateProgressBar();
+            updateButtonStates();
+            
+            // 绑定列表切换事件
+            document.querySelectorAll('.list-btn').forEach(btn => {
+                btn.addEventListener('click', () => switchList(btn.dataset.list));
+            });
+            
+            // 绑定顺序切换事件
+            document.querySelectorAll('.order-btn').forEach(btn => {
+                btn.addEventListener('click', () => setOrder(btn.dataset.order));
+            });
+            
+            // 绑定按钮事件
+            document.getElementById('prev-word').addEventListener('click', prevWord);
+            document.getElementById('show-definition').addEventListener('click', showDefinition);
+            document.getElementById('next-word').addEventListener('click', nextWord);
+            
+            // 绑定键盘事件
+            document.addEventListener('keydown', (e) => {
+                if (e.key === ' ' || e.key === 'Enter') {
+                    e.preventDefault();
+                    showDefinition();
+                } else if (e.key === 'ArrowLeft') prevWord();
+                else if (e.key === 'ArrowRight') nextWord();
+            });
+            
+            // 触摸手势支持
+            let touchStartX = 0;
+            document.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            });
+            
+            document.addEventListener('touchend', (e) => {
+                const touchEndX = e.changedTouches[0].screenX;
+                const diffX = touchEndX - touchStartX;
+                
+                if (Math.abs(diffX) > 50) { // 最小滑动距离
+                    if (diffX > 0) {
+                        prevWord();
+                    } else {
+                        nextWord();
+                    }
+                }
+            });
+            
+            // 初始化显示
+            if (currentWords.length > 0) {
+                displayCurrentWord();
+            } else {
+                document.getElementById('current-word').textContent = 'No words in this list';
+            }
+        });
+    </script>
+</body>
+</html>
