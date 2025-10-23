@@ -1,6 +1,7 @@
 # Word List Cards
 
 六级词汇闪过 | Word Lists
+
 单词卡片学习应用
 
 ## 功能
@@ -12,4 +13,4 @@
 
 ## 使用
 
-打开 `Word List Cards.html` 即可使用
+打开 [zlZayn.github.io/WordLists](https://zlZayn.github.io/WordLists/) 即可使用
