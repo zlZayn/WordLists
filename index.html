@@ -667,7 +667,7 @@
         
         // 点击菜单外部关闭菜单
         document.addEventListener('click', (e) => {
-            if (window.innerWidth <= 768 && 
+            if (window.innerWidth <= 1300 && 
                 !listSelector.contains(e.target) && 
                 !mobileMenuToggle.contains(e.target) &&
                 listSelector.classList.contains('mobile-open')) {
@@ -677,7 +677,7 @@
         
         // 窗口大小变化时调整布局
         window.addEventListener('resize', () => {
-            if (window.innerWidth > 768) {
+            if (window.innerWidth > 1300) {
                 listSelector.classList.remove('mobile-open');
             }
         });
