@@ -136,6 +136,19 @@
             color: var(--text-primary);
         }
 
+        /* 顶部状态样式（全局辅助元素，对称于底部） */
+        .page-top-status {
+            position: fixed;
+            top: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--text-secondary);
+            font-weight: bold;
+            font-size: 0.6rem;
+            z-index: 5;
+            padding: 0;
+        }
+
         /* 底部状态样式（全局辅助元素，紧跟body） */
         .page-bottom-status {
             position: fixed;
@@ -802,6 +815,9 @@
         </div>
     </div>
     
+    <!-- 顶部状态显示 -->
+    <div class="page-top-status" id="page-top-status"></div>
+    
     <!-- 左侧列表选择器 -->
     <div class="sidebar-list-selector" id="sidebar-list-selector">
         <h3>Select Word List</h3>
@@ -860,6 +876,7 @@
         const sidebarListSelector = document.getElementById('sidebar-list-selector');
         const html = document.documentElement;
         const pageBottomStatus = document.getElementById('page-bottom-status');
+        const pageTopStatus = document.getElementById('page-top-status');
         
         // 单词列表弹窗相关元素 - 与修改后的ID同步
         const wordListModalBtn = document.getElementById('word-list-modal-btn');
@@ -975,11 +992,17 @@
                 `${activeList} (${currentWords.length} words)`;
         }
         
-        // ========== 底部状态功能 ==========
-        // 更新底部状态显示 - 变量名同步
+        // ========== 状态显示功能 ==========
+        // 更新状态显示 - 同时更新顶部和底部
         function updateBottomStatus() {
+            const statusText = `${activeList} in ${isOrdered ? 'Order' : 'Disorder'}`;
+            
             if (pageBottomStatus) {
-                pageBottomStatus.textContent = `${activeList} in ${isOrdered ? 'Order' : 'Disorder'}`;
+                pageBottomStatus.textContent = statusText;
+            }
+            
+            if (pageTopStatus) {
+                pageTopStatus.textContent = statusText;
             }
         }
         
