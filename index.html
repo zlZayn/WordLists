@@ -43,6 +43,21 @@
             --scrollbar-thumb: #bbb;
             --scrollbar-thumb-hover: #999;
         }
+
+        /* 底部状态样式 */
+        .bottom-status {
+            position: fixed;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--text-secondary);
+            font-weight: bold;
+            font-size: 0.6rem;
+            z-index: 5;
+            padding: 0;
+            margin: 0;
+        }
+
         /* 深色模式变量 */
         :root.dark {
             /* 背景色 */
@@ -77,98 +92,6 @@
             /* 其他 */
             --border-color: #555;
             --shadow: 0 6px 12px rgba(0,0,0,0.3);
-            --scrollbar-track: #4a485c;
-            --scrollbar-thumb: #666;
-            --scrollbar-thumb-hover: #888;
-        }
-        /* 全局样式 */
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
-            font-size: 1.2em;
-            min-height: 100vh;
-            position: relative;
-            color: var(--text-primary);
-        }
-        /* 主题切换按钮 */
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 20;
-            width: 120px;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 5px;
-            background-color: var(--card-bg);
-            color: var(--text-primary);
-            border: none;
-            cursor: pointer;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-        
-        .theme-toggle:hover {
-            transform: scale(1.05);
-        }
-        /* 左侧列表选择区 */
-        .list-selector {
-            width: 250px;
-            background-color: var(--list-selector-bg);
-            padding: 20px 0;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            position: fixed;
-            left: 0;
-            top: 0;
-            height: 100vh;
-            z-index: 100;
-            transition: transform 0.3s ease;
-            opacity: 0.95;
-        }
-        .list-selector h3,
-        .list-btn-container,
-        .order-toggle-group,
-        .list-info {
-            padding-left: 20px;
-            padding-right: 20px;
-        }
-        
-        .list-selector h3 {
-            color: var(--text-primary);
-            margin-bottom: 10px;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 10px;
-            text-align: center;
-        }
-        
-        .list-btn-container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            box-sizing: border-box;
-        }
-        
-        .order-toggle-group {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: auto;
-            box-sizing: border-box;
-        }
-        
-        .list-info {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid var(--border-color);
-                     --shadow: 0 6px 12px rgba(0,0,0,0.3);
             --scrollbar-track: #4a485c;
             --scrollbar-thumb: #666;
             --scrollbar-thumb-hover: #888;
@@ -679,7 +602,7 @@
     <!-- 主题切换按钮 -->
     <button class="theme-toggle" id="theme-toggle">Dark</button>
     
-    <!-- Left list selector -->
+    <!-- 左侧列表选择器 -->
     <div class="list-selector" id="list-selector">
         <h3>Select Word List</h3>
         <div class="list-btn-container">
@@ -697,7 +620,7 @@
         </div>
     </div>
     
-    <!-- Centered card container -->
+    <!-- 中央卡片容器 -->
     <div class="card-container">
         <div class="card">
             <div class="card-top">
@@ -718,11 +641,15 @@
             </div>
         </div>
     </div>
+    
+    <!-- 底部状态显示 -->
+    <div class="bottom-status" id="bottom-status"></div>
 
     <script>
-        // Word list data
+        // 单词列表数据
         const wordLists = {"Word List 1": [{"word": "bias", "definition": "n.偏见；v.使有偏见；"}, {"word": "analyze", "definition": "vt.分析，分解；"}, {"word": "burden", "definition": "n.担子，重担，负担；vt.给予负担或麻烦；"}, {"word": "urge", "definition": "vt.极力主张，强烈要求；n.刺激，冲动，迫切要求；"}, {"word": "urgent", "definition": "adj.紧急的，迫切的；"}, {"word": "athlete", "definition": "n.运动员；"}, {"word": "justice", "definition": "n.正义，公平，公正；"}, {"word": "justify", "definition": "v.证明...是正当的；"}, {"word": "behave", "definition": "vi.表现；v.表现得体；"}, {"word": "alter", "definition": "v.改变，更改；"}, {"word": "alternative", "definition": "adj.供选择的，选择性的，交替的；n.二中择一，供替代的选择；"}, {"word": "atmosphere", "definition": "n.大气(层)，空气，气氛，环境，大气压；"}, {"word": "hemisphere", "definition": "n.半球；"}, {"word": "catalog", "definition": "n.目录，系列；vt.为...编目录；"}, {"word": "category", "definition": "n.类别，范畴；"}, {"word": "bond", "definition": "n.结合（物），结合力，黏合（剂），联结，束缚，羁绊；"}, {"word": "faculty", "definition": "n.科，系，能力，全体教员，天赋；"}, {"word": "factor", "definition": "n.因素，要素，系数；"}, {"word": "factory", "definition": "n.工厂，制造厂；"}, {"word": "battery", "definition": "n.电池(组)，(器具等的)一组，一套，炮兵连；"}, {"word": "battle", "definition": "n.战斗；v.作战；"}, {"word": "cancer", "definition": "n.癌，癌症，肿瘤；"}, {"word": "alcohol", "definition": "n.酒精，酒；"}, {"word": "basis", "definition": "n.基础，原因，方式；"}, {"word": "database", "definition": "n.数据库，资料库；"}, {"word": "bacteria", "definition": "n.[pl]（[sing]bacterium）细菌；"}, {"word": "serve", "definition": "v.为...服务，供应；"}, {"word": "deserve", "definition": "v.应受，该得，值得；"}, {"word": "reserve", "definition": "n.储备，储存，自然保护区，预备队，缄默，[金融]储备金；vt.储备，保留，预约；vi.预订；"}, {"word": "pioneer", "definition": "n.先锋，拓荒者；vt.开辟，倡导，提倡；vi.作先驱；"}, {"word": "volunteer", "definition": "n.志愿者；vt.志愿；"}, {"word": "reform", "definition": "n.改革，改良，改正；vt.改革，革新，重新组成；vi.重组，改过；adj.改革的，改革教会的；"}, {"word": "former", "definition": "adj.从前的，以前的；"}, {"word": "formula", "definition": "n.公式，方案，配方；"}, {"word": "extreme", "definition": "adj.极端的，极度的，偏激的，尽头的；n.极端，末端，最大程度，极端的事物；"}, {"word": "external", "definition": "a.外部的，外面的，表面上的；"}, {"word": "superior", "definition": "a.较高的，上级的，有优势的，出众的；n.上级，长官；"}, {"word": "junior", "definition": "a.初级的；n.（中学或大学）三年级学生；"}, {"word": "disorder", "definition": "n.混乱，杂乱，骚乱，失调，疾病；"}, {"word": "display", "definition": "n.显示，陈列，炫耀，显示器；vt.显示，夸示；v.显示；"}, {"word": "dispute", "definition": "n.&v.辩论，争论，争吵，争端；"}, {"word": "distract", "definition": "vt.分散（注意力），使分心；"}, {"word": "distribute", "definition": "vt.分配，散布，分开，把...分类；"}, {"word": "discourage", "definition": "v.使气馁，使沮丧，阻碍；"}, {"word": "texture", "definition": "n.质地，纹理，结构，本质，实质；"}, {"word": "acupuncture", "definition": "n.针刺，针灸；"}, {"word": "architecture", "definition": "n.建筑学，建筑风格，建筑式样，架构；"}, {"word": "sculpture", "definition": "n.雕塑，雕刻，刻蚀；vt.雕塑，雕刻，刻蚀；vi.从事雕刻；"}, {"word": "structure", "definition": "n.结构，构造，建筑物；v.构造，建造；"}, {"word": "infrastructure", "definition": "n.基础结构，基础设施；"}, {"word": "leisure", "definition": "a.&n.空闲（的），闲暇（的），悠闲（的），安逸（的）；"}, {"word": "feature", "definition": "n.特征，容貌，特色，特写；v.以...为特色；"}, {"word": "decrease", "definition": "v.减少；"}, {"word": "deplete", "definition": "v.损耗，耗尽，使枯竭；"}, {"word": "detect", "definition": "v.发觉，发现，检定；"}, {"word": "decline", "definition": "v.拒绝，变弱，变小；n.消减；"}, {"word": "depend", "definition": "vi.依赖，依靠，取决于，相信，信赖；"}, {"word": "deposit", "definition": "v.存放，放下，使沉积；n.押金；"}, {"word": "desert", "definition": "v.放弃，离弃；n.沙漠；"}, {"word": "despite", "definition": "prep.不管，尽管，不论；"}, {"word": "detail", "definition": "n.细节，详情；vt.详述，细说；"}, {"word": "default", "definition": "vi.拖欠，不履行，不到场；n.违约，缺席，缺乏，系统默认值；vt.不履行，不参加（比赛等），对...处以缺席裁判；"}, {"word": "desire", "definition": "n.欲望，要求；v.想要，请求；"}, {"word": "declare", "definition": "vt.宣布，声明；"}, {"word": "define", "definition": "vt.定义，详细说明；"}, {"word": "delay", "definition": "n.耽搁，迟滞；v.使延误，使耽搁，延期，推迟；"}, {"word": "deliver", "definition": "v.传送，兑现；vt.发表，接生；"}, {"word": "demonstrate", "definition": "vt.证明，展示，论证；vi.示威；"}, {"word": "determine", "definition": "v.决心，决意，测定，查明；"}, {"word": "familiar", "definition": "a.熟悉的，通晓的，亲近的；n.熟客，密友；"}, {"word": "solar", "definition": "adj.太阳的，太阳系的，日光的；"}, {"word": "nuclear", "definition": "a.核的，核心的，原子能的，核动力的；"}, {"word": "scholar", "definition": "n.学者；"}, {"word": "seminar", "definition": "n.研讨会，研讨班；"}, {"word": "comment", "definition": "n.评论，解释，批评；v.评论；"}, {"word": "mental", "definition": "adj.精神的，智力的，心理上的；"}, {"word": "mention", "definition": "vt.提到，谈到，提及，论及，说起；n.提及，说起；"}, {"word": "remind", "definition": "vt.提醒，使想起；"}, {"word": "document", "definition": "n.文档；vt.记录；"}, {"word": "implement", "definition": "vt.实施，执行，实现，使生效；n.工具，器具，手段；"}, {"word": "monument", "definition": "n.纪念碑，纪念物，不朽的功业（著作）等；"}, {"word": "parliament", "definition": "n.议会，国会；"}], "Word List 2": [{"word": "rival", "definition": "n.竞争者，对手；v.竞争，对抗；a.竞争的；"}, {"word": "thrive", "definition": "vi.繁荣，兴旺，茁壮成长；"}, {"word": "cave", "definition": "n.洞穴；v.挖洞；"}, {"word": "barrel", "definition": "n.桶，一桶的量，大量，枪管，炮管，笔管，汽油桶；vi.快速移动；vt.把...装桶；"}, {"word": "barrier", "definition": "n.路障，障碍；"}, {"word": "circus", "definition": "n.马戏团，杂技团，马戏场，杂技场；"}, {"word": "satellite", "definition": "n.卫星，人造卫星；"}, {"word": "purchase", "definition": "v.买，购买；n.购买的物品；"}, {"word": "purpose", "definition": "n.目的，意向，决心，论题，意义；vt.意欲，企图；"}, {"word": "pursue", "definition": "v.追赶，追求，追踪；"}, {"word": "minimum", "definition": "n.最小值，最小化；adj.最小的；"}, {"word": "minister", "definition": "n.部长，大臣，牧师；vi.执行牧师职务，辅助或伺候某人；"}, {"word": "carbon", "definition": "n.[化]碳(元素符号C)，(一张)复写纸；"}, {"word": "cite", "definition": "vt.引用，传讯，想起，表彰；"}, {"word": "calorie", "definition": "n.卡路里，卡(热量单位)；"}, {"word": "clone", "definition": "n.无性繁殖，克隆，复制品；v.克隆；"}, {"word": "private", "definition": "adj.私人的，私立的；"}, {"word": "privilege", "definition": "n.特权，优待；vt.给与...特权，特免；"}, {"word": "civil", "definition": "adj.全民的，市民的，公民的，国民的，民间的，民事的，根据民法的，文职的，有礼貌的；"}, {"word": "philosophy", "definition": "n.哲学，人生观；"}, {"word": "sophisticated", "definition": "a.老于世故的，(仪器)精密的；"}, {"word": "coast", "definition": "vi.滑行，沿岸航行，不费力地取得成功；vt.沿...岸航行；n.海岸，滑坡；"}, {"word": "campaign", "definition": "n.战役，竞选活动；vi.参加活动；"}, {"word": "version", "definition": "n.版本，形式；"}, {"word": "reverse", "definition": "n.&v.颠倒，倒转，倒退，逆转；"}, {"word": "convert", "definition": "n.被改变宗教信仰的人；v.改变，转化；"}, {"word": "symptom", "definition": "n.症状，征候，征兆；"}, {"word": "syndrome", "definition": "n.综合病征，并存特性；"}, {"word": "prohibit", "definition": "vt.禁止，阻止；"}, {"word": "prompt", "definition": "v.促使，激起；a.立即的，及时的；"}, {"word": "profit", "definition": "n.利润，利益；v.有益；"}, {"word": "intelligent", "definition": "adj.聪明的，有才智的，智能的；"}, {"word": "interview", "definition": "v./n.接见，会见，采访，面试；"}, {"word": "entrepreneur", "definition": "n.企业家，创业人；"}, {"word": "enterprise", "definition": "n.公司，事业单位，进取心；"}, {"word": "interfere", "definition": "vi.干涉，妨碍，打扰；vt.冲突，介入；"}, {"word": "internal", "definition": "adj.内在的，国内的，体内的；"}, {"word": "cognitive", "definition": "adj.认知的，认识的；"}, {"word": "sensitive", "definition": "a.敏感的，体贴的，易生气的，棘手的；"}, {"word": "embrace", "definition": "vt.拥抱，信奉，皈依，包含；vi.拥抱；n.拥抱；"}, {"word": "enthusiasm", "definition": "n.热心，热情，热烈；"}, {"word": "enroll", "definition": "vt.登记，使加入，把...记入名册，使入伍；vi.参加，登记，注册，记入名册；"}, {"word": "envelope", "definition": "n.信封，封套，封皮；"}, {"word": "envelop", "definition": "vt.包封，遮盖，包围；"}, {"word": "ensure", "definition": "v.确保，担保；"}, {"word": "encourage", "definition": "vt.鼓励，支持，助长；"}, {"word": "endure", "definition": "v.忍耐，忍受，容忍；"}, {"word": "enhance", "definition": "v.提高，增加，改善；"}, {"word": "engage", "definition": "v.从事，参与，雇佣，引起···的注意；"}, {"word": "endorse", "definition": "vt.支持，赞同，代言；"}, {"word": "entail", "definition": "v.需要，牵涉，导致；"}, {"word": "merchant", "definition": "n.商人，批发商，店主；adj.商业的，商人的；"}, {"word": "tenant", "definition": "n.承租人，房客，佃户，居住者；vt.租借（常用于被动语态）；"}, {"word": "reluctant", "definition": "adj.不情愿的，勉强的，顽抗的；"}, {"word": "significant", "definition": "adj.有意义的，重大的，重要的；"}, {"word": "recognize", "definition": "v.认识，认出，承认；"}, {"word": "criticize", "definition": "v.批评，评论；"}, {"word": "vulnerable", "definition": "a.脆弱的，易受......伤害的；"}, {"word": "available", "definition": "adj.可用到的，可利用的，有用的，有空的，接受探访的；"}, {"word": "invisible", "definition": "a.隐形的，无形的；"}, {"word": "flexible", "definition": "a.易弯曲的，灵活的；"}, {"word": "responsible", "definition": "a.有责任的，应负责任的；"}, {"word": "setting", "definition": "n.背景，环境，装置；"}, {"word": "regarding", "definition": "prep.关于；"}, {"word": "motivate", "definition": "v.激发，刺激；"}, {"word": "incorporate", "definition": "vt.包含，吸收，体现，把...合并；vi.合并，混合，组成公司；adj.合并的，一体化的，组成公司的；"}, {"word": "illustrate", "definition": "v.为...作插图或图表，说明，阐明；"}, {"word": "navigate", "definition": "v.航海，导航，驾驶；"}, {"word": "indicate", "definition": "vt.指示，指出，象征，表明；"}, {"word": "investigate", "definition": "v.调查，研究；"}, {"word": "stimulate", "definition": "vt.刺激，激励，鼓舞；vi.起刺激作用；"}, {"word": "calculate", "definition": "vt.计算，估计，计划；"}, {"word": "celebrate", "definition": "vt.庆祝，祝贺，表扬，赞美；"}, {"word": "communicate", "definition": "v.交流，沟通，传达；"}, {"word": "dominate", "definition": "vt.控制，支配，占优势，在...中占主要地位；vi.占优势，处于支配地位；"}, {"word": "estimate", "definition": "v./n.估计，估价，评估；"}, {"word": "migrate", "definition": "v.迁移，移居；"}, {"word": "exaggerate", "definition": "v.夸张，夸大；"}, {"word": "ultimate", "definition": "adj.最终的，极限的，根本的；n.终极，根本，基本原则；"}, {"word": "immediate", "definition": "adj.立即的，直接的，最接近的；"}, {"word": "climate", "definition": "n.气候；"}, {"word": "undergraduate", "definition": "n.本科生；"}], "Zayn's List": [{"word": "accommodate", "definition": "vt.容纳，使适应；"}, {"word": "account", "definition": "v.解释，负责；"}, {"word": "affiliate", "definition": "vt.联系，从属；"}, {"word": "alleviate", "definition": "vt.减轻，缓解；"}, {"word": "ambiguous", "definition": "adj.含糊的，不明确的；"}, {"word": "benevolent", "definition": "adj.仁慈的，慈善的；"}, {"word": "bilateral", "definition": "adj.双边的；"}, {"word": "cognitive", "definition": "adj.认知的；"}, {"word": "cohere", "definition": "v.凝聚，团结；"}, {"word": "cohere", "definition": "v.连贯，一致；"}, {"word": "compatible", "definition": "adj.兼容的，和谐的；"}, {"word": "complement", "definition": "vt.补充；n.补充物；"}, {"word": "comprehensive", "definition": "adj.全面的，综合的；"}, {"word": "consensus", "definition": "n.共识，一致意见；"}, {"word": "contemporary", "definition": "adj.当代的；n.同代人；"}, {"word": "controversial", "definition": "adj.有争议的；"}, {"word": "degrade", "definition": "vt.退化，降级；"}, {"word": "deteriorate", "definition": "v.恶化，变坏；"}, {"word": "differentiate", "definition": "v.区分，区别；"}, {"word": "dilemma", "definition": "n.困境，进退两难；"}, {"word": "disseminate", "definition": "vt.传播，散布；"}, {"word": "dubious", "definition": "adj.怀疑的，可疑的；"}, {"word": "elaborate", "definition": "adj.复杂的；v.详细说明；"}, {"word": "empirical", "definition": "adj.经验主义的；"}, {"word": "encompass", "definition": "vt.包含，包括；"}, {"word": "enlighten", "definition": "vt.启蒙，启迪；"}, {"word": "exacerbate", "definition": "vt.使恶化，加剧；"}, {"word": "expend", "definition": "v.花费，消耗；"}, {"word": "exploit", "definition": "vt.开发，利用；"}, {"word": "facet", "definition": "n.方面，侧面；"}, {"word": "facilitate", "definition": "vt.促进，使容易；"}, {"word": "facilitate", "definition": "vt.促进，使容易；"}, {"word": "feasible", "definition": "adj.可行的，可能的；"}, {"word": "globalize", "definition": "vt.全球化；"}, {"word": "gregarious", "definition": "adj.社交的，群居的；"}, {"word": "heterogeneous", "definition": "adj.异质的，不同的；"}, {"word": "hierarchy", "definition": "n.等级制度，层级；"}, {"word": "holistic", "definition": "adj.整体的，全盘的；"}, {"word": "hypothesize", "definition": "v.假设，假定；"}, {"word": "imperative", "definition": "adj.必要的，紧急的；"}, {"word": "implement", "definition": "vt.实施，执行；"}, {"word": "implicate", "definition": "vt.暗示，牵连；"}, {"word": "infrastructure", "definition": "n.基础设施，基础结构；"}, {"word": "initiate", "definition": "v.开始，发起；"}, {"word": "integrate", "definition": "v.整合，使完整；"}, {"word": "intricate", "definition": "adj.复杂的，错综的；"}, {"word": "jeopardize", "definition": "vt.危害，危及；"}, {"word": "jurisdiction", "definition": "n.司法权，管辖权；"}, {"word": "justify", "definition": "vt.证明合理，辩护；"}, {"word": "juvenile", "definition": "adj.青少年的；n.青少年；"}, {"word": "legislate", "definition": "v.立法，制定法律；"}, {"word": "legitimate", "definition": "adj.合法的，合理的；"}, {"word": "lucrative", "definition": "adj.赚钱的，有利可图的；"}, {"word": "magnitude", "definition": "n.巨大，重要性；"}, {"word": "method", "definition": "n.方法，方式；"}, {"word": "mitigate", "definition": "vt.减轻，缓和；"}, {"word": "modernize", "definition": "vt.现代化；"}, {"word": "negligible", "definition": "adj.可忽略的，微不足道的；"}, {"word": "neutral", "definition": "adj.中立的，中性的；"}, {"word": "notify", "definition": "vt.通知，告知；"}, {"word": "notorious", "definition": "adj.臭名昭著的；"}, {"word": "obsolete", "definition": "adj.过时的，淘汰的；"}, {"word": "optimize", "definition": "vt.优化；"}, {"word": "orthodox", "definition": "adj.正统的，传统的；"}, {"word": "paradigm", "definition": "n.范例，模式；"}, {"word": "paradox", "definition": "n.悖论，矛盾；"}, {"word": "perspective", "definition": "n.视角，观点；"}, {"word": "pertinent", "definition": "adj.相关的，切题的；"}, {"word": "premise", "definition": "n.前提，假设；"}, {"word": "prerequisite", "definition": "n.先决条件，前提；"}, {"word": "prioritize", "definition": "vt.优先处理；"}, {"word": "profound", "definition": "adj.深刻的，深远的；"}, {"word": "provide", "definition": "v.供应，提供；"}, {"word": "qualify", "definition": "v.使合格，取得资格；"}, {"word": "quantify", "definition": "v.量化，确定数量；"}, {"word": "reconcile", "definition": "vt.和解，调和；"}, {"word": "redundant", "definition": "adj.多余的，冗余的；"}, {"word": "rehabilitate", "definition": "v.康复，修复；"}, {"word": "rigor", "definition": "n.严格，严密；"}, {"word": "scrutinize", "definition": "vt.仔细检查，监视；"}, {"word": "simultaneous", "definition": "adj.同时的，同步的；"}, {"word": "specify", "definition": "vt.指定，详细说明；"}, {"word": "standardize", "definition": "vt.标准化；"}, {"word": "subordinate", "definition": "adj.下级的；n.下属；"}, {"word": "subsidize", "definition": "vt.补贴，资助；"}, {"word": "substantial", "definition": "adj.大量的，实质的；"}, {"word": "sustain", "definition": "v.维持，支撑；"}, {"word": "tangible", "definition": "adj.有形的，实际的；"}, {"word": "tentative", "definition": "adj.试探性的，暂定的；"}, {"word": "terminate", "definition": "v.终止，结束；"}, {"word": "terminate", "definition": "v.终止，结束；"}, {"word": "transform", "definition": "vt.转变，改革；"}, {"word": "transparent", "definition": "adj.透明的，清晰的；"}, {"word": "ubiquitous", "definition": "adj.普遍存在的；"}, {"word": "unanimous", "definition": "adj.全体一致的；"}, {"word": "underlie", "definition": "vt.构成基础，位于下面；"}, {"word": "undermine", "definition": "vt.逐渐削弱，破坏；"}, {"word": "uniform", "definition": "adj.一致的，统一的；"}, {"word": "utilize", "definition": "vt.利用，使用；"}, {"word": "validate", "definition": "vt.验证，确认；"}, {"word": "verify", "definition": "vt.核实，证明；"}, {"word": "versatile", "definition": "adj.多才多艺的，多功能的；"}, {"word": "viable", "definition": "adj.可行的，能生存的；"}, {"word": "visualize", "definition": "vt.可视化，想象；"}, {"word": "vulnerable", "definition": "adj.易受伤害的，脆弱的；"}, {"word": "warrant", "definition": "vt.证明...合理；n.授权令；"}, {"word": "whereby", "definition": "adv.借以，由此；"}, {"word": "widespread", "definition": "adj.分布广泛的；"}, {"word": "zealous", "definition": "adj.热心的，热情的；"}]};
-        let activeList = Object.keys(wordLists)[0];
+        const listKeys = Object.keys(wordLists);
+        let activeList = listKeys[Math.floor(Math.random() * listKeys.length)];
         let currentWords = wordLists[activeList] || [];
         let currentIndex = 0;
         let isOrdered = true;
@@ -732,29 +659,39 @@
         const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
         const listSelector = document.getElementById('list-selector');
         const html = document.documentElement;
+        const bottomStatus = document.getElementById('bottom-status');
         
         console.log('Word lists loaded:', Object.keys(wordLists));
         console.log('Current words:', currentWords);
-        
-        // 深色模式切换逻辑
+
+        // ========== 主题功能 ==========
+        // 初始化主题
         function initTheme() {
-            if (localStorage.getItem('theme') === 'dark' || 
+            if (localStorage.getItem('theme') === 'dark' ||
                 (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 html.classList.add('dark');
-                themeToggle.textContent = 'Light';
+                themeToggle.textContent = 'Dark';
             } else {
                 html.classList.remove('dark');
-                themeToggle.textContent = 'Dark';
+                themeToggle.textContent = 'Light';
             }
         }
-        
+
+        // 主题切换事件
         themeToggle.addEventListener('click', () => {
-            html.classList.toggle('dark');
-            const isDark = html.classList.contains('dark');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            themeToggle.textContent = isDark ? 'Light' : 'Dark';
+            const isDarkNow = html.classList.contains('dark');
+            if (isDarkNow) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                themeToggle.textContent = 'Light';
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                themeToggle.textContent = 'Dark';
+            }
         });
         
+        // ========== 移动端菜单功能 ==========
         // 移动端菜单切换
         mobileMenuToggle.addEventListener('click', () => {
             listSelector.classList.toggle('mobile-open');
@@ -777,6 +714,7 @@
             }
         });
         
+        // ========== 进度条功能 ==========
         // 更新进度条
         function updateProgressBar() {
             const progressBar = document.getElementById('progress-bar');
@@ -787,12 +725,22 @@
             }
         }
         
+        // ========== 列表信息功能 ==========
         // 更新列表统计信息
         function updateListStats() {
             document.getElementById('list-stats').textContent = 
                 `${activeList} (${currentWords.length} words)`;
         }
         
+        // ========== 底部状态功能 ==========
+        // 更新底部状态显示
+        function updateBottomStatus() {
+            if (bottomStatus) {
+                bottomStatus.textContent = `${activeList} in ${isOrdered ? 'Order' : 'Disorder'}`;
+            }
+        }
+        
+        // ========== 单词列表功能 ==========
         // 切换单词列表
         function switchList(listName) {
             console.log('Switching to list:', listName);
@@ -808,6 +756,7 @@
             // 更新显示
             updateListStats();
             updateProgressBar();
+            updateBottomStatus();
             
             // 加载单词
             if (currentWords.length === 0) {
@@ -829,9 +778,11 @@
                 btn.classList.toggle('active', btn.dataset.order === orderType);
             });
             
+            updateBottomStatus();
             switchList(activeList);
         }
         
+        // ========== 按钮状态管理 ==========
         // 更新按钮状态
         function updateButtonStates() {
             const prevBtn = document.getElementById('prev-word');
@@ -844,6 +795,7 @@
             }
         }
         
+        // ========== 单词显示功能 ==========
         // 显示当前单词
         function displayCurrentWord() {
             const wordEl = document.getElementById('current-word');
@@ -856,22 +808,16 @@
                 return;
             }
             
+            // 重置释义元素 - 完全清空内容
             defEl.classList.remove('visible');
+            defEl.innerHTML = ''; // 清空内容，防止误触
             if (defWrapper) defWrapper.scrollTop = 0;
             
             if (currentWords.length > 0 && currentIndex < currentWords.length) {
                 wordEl.textContent = currentWords[currentIndex].word;
-                // 1. 去掉原释义末尾的“；”，避免重复
-const cleanDef = currentWords[currentIndex].definition.replace(/；$/, '');
-// 2. 生成有道词典链接（作为“释义项”）
-const youdaoItem = `<a href="https://dict.youdao.com/w/${currentWords[currentIndex].word}/" target="_blank" style="color: var(--next-btn); text-decoration: underline;">有道词典</a>`;
-// 3. 拼接“清理后释义 + ； + 链接项”，再按原格式换行
-const correctDef = `${cleanDef}；${youdaoItem}`.replace(/；/g, '；<br>');
-defEl.innerHTML = correctDef;
                 counterEl.textContent = `Word ${currentIndex + 1} / ${currentWords.length}`;
             } else {
                 wordEl.textContent = 'No words available';
-                defEl.innerHTML = '';
                 counterEl.textContent = '';
             }
             
@@ -879,11 +825,26 @@ defEl.innerHTML = correctDef;
             updateButtonStates();
         }
         
-        // 显示定义
+        // 显示/隐藏定义（切换功能）
         function showDefinition() {
             const defEl = document.getElementById('current-definition');
-            if (defEl) {
-                defEl.classList.add('visible');
+            const showBtn = document.getElementById('show-definition');
+            if (defEl && currentWords.length > 0 && currentIndex < currentWords.length) {
+                // 检查是否已显示
+                if (defEl.classList.contains('visible')) {
+                    // 如果已显示，则隐藏
+                    defEl.classList.remove('visible');
+                    defEl.innerHTML = '';
+                    if (showBtn) showBtn.textContent = 'Display Definition';
+                } else {
+                    // 如果未显示，则渲染并显示释义内容
+                    const defParts = currentWords[currentIndex].definition.split('；').filter(part => part.trim() !== '');
+                    const youdaoLink = `<a href="https://dict.youdao.com/result?word=${encodeURIComponent(currentWords[currentIndex].word)}&lang=en" target="_blank" style="color: var(--show-btn); text-decoration: underline;">有道词典</a>`;
+                    defParts.push(youdaoLink);
+                    defEl.innerHTML = defParts.join('；<br>');
+                    defEl.classList.add('visible');
+                    if (showBtn) showBtn.textContent = 'Conceal Definition';
+                }
             }
         }
         
@@ -930,10 +891,15 @@ defEl.innerHTML = correctDef;
             }
         }
         
+        // ========== 页面初始化 ==========
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', () => {
             console.log('DOM loaded, initializing...');
+            
+            // 初始化主题
             initTheme();
+            
+            // 初始化显示
             updateListStats();
             updateProgressBar();
             updateButtonStates();
@@ -954,7 +920,7 @@ defEl.innerHTML = correctDef;
                 });
             });
             
-            // 绑定按钮事件
+            // 绑定功能按钮事件
             const prevBtn = document.getElementById('prev-word');
             const showBtn = document.getElementById('show-definition');
             const nextBtn = document.getElementById('next-word');
@@ -991,6 +957,17 @@ defEl.innerHTML = correctDef;
                 }
             });
             
+            // 更新左侧按钮激活状态以匹配随机选择的词表
+            document.querySelectorAll('.list-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.list === activeList);
+            });
+            
+            // 默认乱序设置
+            isOrdered = false; // 设为乱序模式
+            document.querySelector('.order-btn[data-order="disordered"]').classList.add('active'); // 激活乱序按钮
+            document.querySelector('.order-btn[data-order="ordered"]').classList.remove('active'); // 取消顺序按钮激活
+            currentWords = [...wordLists[activeList]].sort(() => Math.random() - 0.5); // 加载乱序单词
+            
             // 初始化显示
             if (currentWords.length > 0) {
                 displayCurrentWord();
@@ -1001,6 +978,8 @@ defEl.innerHTML = correctDef;
                 }
             }
             
+            // 初始化底部状态显示
+            updateBottomStatus();
             console.log('Initialization complete');
         });
     </script>
