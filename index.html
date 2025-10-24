@@ -770,7 +770,12 @@
             
             if (currentWords.length > 0 && currentIndex < currentWords.length) {
                 wordEl.textContent = currentWords[currentIndex].word;
-                defEl.innerHTML = currentWords[currentIndex].definition.replace(/；/g, '；<br>');
+                // 保留原注释格式，在下方新增有道词典链接
+const originalDef = currentWords[currentIndex].definition.replace(/；/g, '；<br>');
+// 生成当前单词的有道词典链接（自动匹配单词）
+const youdaoLink = `https://dict.youdao.com/w/${currentWords[currentIndex].word}/`;
+// 拼接“原注释 + 换行 + 有道词典链接文本”
+defEl.innerHTML = `${originalDef}<br><a href="${youdaoLink}" target="_blank" style="color: var(--next-btn); text-decoration: underline;">有道词典</a>`;
                 counterEl.textContent = `Word ${currentIndex + 1} / ${currentWords.length}`;
             } else {
                 wordEl.textContent = 'No words available';
