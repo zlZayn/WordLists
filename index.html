@@ -43,7 +43,6 @@
             --scrollbar-thumb: #bbb;
             --scrollbar-thumb-hover: #999;
         }
-
         /* 深色模式变量 */
         :root.dark {
             /* 背景色 */
@@ -78,6 +77,98 @@
             /* 其他 */
             --border-color: #555;
             --shadow: 0 6px 12px rgba(0,0,0,0.3);
+            --scrollbar-track: #4a485c;
+            --scrollbar-thumb: #666;
+            --scrollbar-thumb-hover: #888;
+        }
+        /* 全局样式 */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            font-size: 1.2em;
+            min-height: 100vh;
+            position: relative;
+            color: var(--text-primary);
+        }
+        /* 主题切换按钮 */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 20;
+            width: 120px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .theme-toggle:hover {
+            transform: scale(1.05);
+        }
+        /* 左侧列表选择区 */
+        .list-selector {
+            width: 250px;
+            background-color: var(--list-selector-bg);
+            padding: 20px 0;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            z-index: 100;
+            transition: transform 0.3s ease;
+            opacity: 0.95;
+        }
+        .list-selector h3,
+        .list-btn-container,
+        .order-toggle-group,
+        .list-info {
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+        
+        .list-selector h3 {
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            text-align: center;
+        }
+        
+        .list-btn-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-sizing: border-box;
+        }
+        
+        .order-toggle-group {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: auto;
+            box-sizing: border-box;
+        }
+        
+        .list-info {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+                     --shadow: 0 6px 12px rgba(0,0,0,0.3);
             --scrollbar-track: #4a485c;
             --scrollbar-thumb: #666;
             --scrollbar-thumb-hover: #888;
