@@ -28,6 +28,7 @@
             --btn-show-def-hover: #ff6699;
             --btn-next-bg: #42a5f5;
             --btn-next-hover: #1876F3;
+            --btn-active-bg: #ff99cc;
             
             /* 侧边栏按钮 */
             --order-toggle-disordered: var(--btn-prev-bg);
@@ -67,6 +68,7 @@
             /* 进度条 */
             --progress-bar-bg: #4a485c;
             --progress-bar-fill: #d64187;
+            --btn-active-bg: #d64187;
             
             /* 功能按钮 */
             --btn-prev-bg: #555;
@@ -186,6 +188,10 @@
         .btn-common:hover {
             transform: scale(1.05);
         }
+        .btn-common.active {
+            background-color: var(--btn-active-bg);
+            transition: background-color 0.2s ease;
+        }
 
         /* 3.2 浮动按钮（顶部/底部悬浮按钮，如主题切换、侧边栏开关） */
         .btn-floating {
@@ -209,6 +215,14 @@
         .word-list-modal-btn {
             bottom: 20px;
             right: 20px;
+        }
+        .focus-mode-btn {
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .focus-mode-btn:hover {
+            transform: translateX(-50%) scale(1.05);
         }
 
         /* 3.3 侧边栏按钮（列表选择、顺序切换） */
@@ -243,6 +257,46 @@
             background-color: var(--order-toggle-ordered);
         }
 
+        /* 专注模式样式 */
+        body.focus-mode .sidebar-list-selector, 
+        body.focus-mode .mobile-sidebar-toggle, 
+        body.focus-mode .theme-switch-btn, 
+        body.focus-mode .word-list-modal-btn {
+            display: none !important;
+        }
+        body.focus-mode .central-card-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            z-index: 15;
+            transform: none;
+            transition: all 0.2s ease;
+        }
+        body.focus-mode .central-word-card {
+            width: 100%;
+            max-width: 100%;
+            min-height: calc(100vh - 90px);
+            box-shadow: var(--shadow-primary);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            margin-top: 70px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+        /* 专注模式下增大单词上间距 */
+        body.focus-mode .current-word {
+            margin-top: 60px;
+            transition: all 0.2s ease;
+        }
+
         /* 3.4 中央卡片功能按钮（上一个、显示释义、下一个） */
         .card-btn-group {
             display: flex;
@@ -259,6 +313,32 @@
             min-width: 120px;
             max-width: 200px;
             flex: 1;
+        }
+        /* 专注模式下按钮组布局调整 - 向两边分布 */
+        body.focus-mode .card-btn-group {
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            transition: all 0.2s ease;
+        }
+        /* 专注模式下功能按钮放大 */
+        body.focus-mode .card-btn-group .btn-common {
+            padding: 20px 30px;
+            font-size: 24px;
+            min-width: 200px;
+            flex: 1;
+            margin: 0 10px;
+            white-space: normal;
+            text-align: center;
+        }
+        /* 响应式设计 - 屏幕过窄时自动调整 */
+        @media (max-width: 768px) {
+            body.focus-mode .card-btn-group .btn-common {
+                font-size: 18px;
+                padding: 15px 20px;
+                min-width: 100px;
+            }
         }
         /* 功能按钮背景色差异化 */
         #btn-prev-word {
@@ -352,6 +432,7 @@
             z-index: 5;
             padding: 0 20px;
             box-sizing: border-box;
+            transition: all 0.2s ease;
         }
         .central-word-card {
             background-color: var(--card-bg);
@@ -366,6 +447,7 @@
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
+            transition: all 0.2s ease;
         }
         /* 卡片顶部（进度条+索引） */
         .card-top-bar {
@@ -792,6 +874,9 @@
     <!-- 主题切换按钮 -->
     <button class="btn-common btn-floating theme-switch-btn" id="theme-switch-btn">Dark</button>
     
+    <!-- 专注模式按钮 -->
+    <button class="btn-common btn-floating focus-mode-btn" id="focus-mode-btn">Focus</button>
+    
     <!-- 单词列表弹窗按钮 -->
     <button class="btn-common btn-floating word-list-modal-btn" id="word-list-modal-btn">Word List</button>
     
@@ -874,6 +959,7 @@
         const themeSwitchBtn = document.getElementById('theme-switch-btn');
         const mobileSidebarToggle = document.getElementById('mobile-sidebar-toggle');
         const sidebarListSelector = document.getElementById('sidebar-list-selector');
+        const focusModeBtn = document.getElementById('focus-mode-btn');
         const html = document.documentElement;
         const pageBottomStatus = document.getElementById('page-bottom-status');
         const pageTopStatus = document.getElementById('page-top-status');
@@ -973,6 +1059,36 @@
                 sidebarListSelector.classList.remove('mobile-open');
             }
         });
+        
+        // ========== 专注模式功能 ==========
+        // 切换Focus模式
+        function toggleFocusMode() {
+            const body = document.body;
+            const isFocusMode = body.classList.toggle('focus-mode');
+            
+            if (isFocusMode) {
+                focusModeBtn.textContent = 'Focusing';
+                focusModeBtn.classList.add('active');
+                // 保留顶部和底部状态显示
+            } else {
+                focusModeBtn.textContent = 'Focus';
+                focusModeBtn.classList.remove('active');
+                // 状态显示一直保持可见
+            }
+        }
+        
+        // 处理ESC键退出Focus模式
+        function handleEscapeKey(event) {
+            if (event.key === 'Escape' && document.body.classList.contains('focus-mode')) {
+                toggleFocusMode();
+            }
+        }
+        
+        // Focus模式按钮点击事件
+        focusModeBtn.addEventListener('click', toggleFocusMode);
+        
+        // 键盘事件监听
+        document.addEventListener('keydown', handleEscapeKey);
         
         // ========== 进度条功能 ==========
         // 更新进度条 - 元素ID同步
