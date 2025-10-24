@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>六级词汇闪过 | Word Lists</title>
+    <title>单词列表 | Word Lists</title>
     <style>
-        /* 基础变量定义 - 与修改后的元素名同步 */
+        /* 1. 基础变量定义（优先定义，供后续使用） */
         :root {
             /* 背景色 */
             --page-bg: #fcfaf8;
@@ -44,184 +44,10 @@
             --scrollbar-thumb-hover: #999;
         }
 
-        /* 底部状态样式 - 明确页面底部定位 */
-        .page-bottom-status {
-            position: fixed;
-            bottom: 2px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: var(--text-secondary);
-            font-weight: bold;
-            font-size: 0.6rem;
-            z-index: 5;
-            padding: 0;
-            margin: 0;
-        }
-
-        /* 单词列表弹窗按钮 - 明确功能是打开弹窗 */
-        .word-list-modal-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 20;
-            width: 120px;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 5px;
-            background-color: var(--card-bg);
-            color: var(--text-primary);
-            border: none;
-            cursor: pointer;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-        
-        .word-list-modal-btn:hover {
-            transform: scale(1.05);
-        }
-
-        /* 单词列表弹窗样式 - 替换table为list-modal，消除歧义 */
-        .word-list-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .word-list-modal-content {
-            background-color: var(--page-bg);
-            border-radius: 15px;
-            box-shadow: var(--shadow);
-            width: 80%;  /* 默认大屏(>1024px)：80%宽度 */
-            max-width: 1200px; /* 默认大屏最大宽度 */
-            position: fixed;
-            top: 60px; /* 上边距固定值 */
-            bottom: 60px; /* 下边距固定值 */
-            padding: 2%; /* 大屏内边距使用百分比 */
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .word-list-modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2%; /* 使用百分比 */
-            padding-bottom: 1.5%; /* 使用百分比 */
-            border-bottom: 1px solid var(--border-color); /* 统一为1px */
-        }
-        
-        .word-list-modal-title {
-            text-align: left;
-        }
-        
-        /* 单词列表弹窗底部分割线 - 只显示装饰线 */
-        .word-list-modal-stats {
-            margin-top: 1.5%;
-            padding-top: 1.5%;
-            border-top: 1px solid var(--border-color);
-            min-height: 1px; /* 确保分割线可见 */
-        }
-        
-        .word-list-modal-title {
-            font-size: 28px;
-            font-weight: bold;
-            color: var(--text-primary);
-            margin: 0;
-            text-align: center;
-        }
-        
-        .close-list-modal-btn {
-            background: none;
-            border: none;
-            font-size: 30px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            padding: 5px;
-            transition: color 0.3s ease;
-            margin-left: auto;
-        }
-        
-        .close-list-modal-btn:hover {
-            color: var(--text-primary);
-        }
-        
-        .word-list-modal-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1%; /* 使用百分比 */
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5%; /* 使用百分比 */
-            align-content: start;
-        }
-        
-        /* 单词列表弹窗滚动条样式 */
-        .word-list-modal-container::-webkit-scrollbar {
-            width: 12px;
-        }
-        
-        .word-list-modal-container::-webkit-scrollbar-track {
-            background: var(--progress-bar-bg);
-            border-radius: 6px;
-        }
-        
-        .word-list-modal-container::-webkit-scrollbar-thumb {
-            background: var(--progress-bar-fill);
-            border-radius: 6px;
-        }
-        
-        .word-list-modal-container::-webkit-scrollbar-thumb:hover {
-            background: var(--btn-show-def-hover);
-        }
-        
-        .word-list-modal-item {
-            background-color: var(--card-bg);
-            border-radius: 10px;
-            padding: 1.5%; /* 使用百分比 */
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        
-        .word-list-modal-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            border-color: var(--btn-show-def-bg);
-        }
-        
-        .list-item-word {
-            font-size: 20px;
-            font-weight: bold;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-        
-        .list-item-definition {
-            font-size: 14px;
-            color: var(--text-secondary);
-            line-height: 1.4;
-        }
-        
-        .word-list-modal-stats {
-            margin-top: 1.5%; /* 使用百分比 */
-            padding-top: 1.5%; /* 使用百分比 */
-            border-top: 1px solid var(--border-color);
-            font-size: 16px;
-            color: var(--text-secondary);
-            text-align: center;
-        }
-
-        /* 深色模式变量 - 与基础变量同步 */
+        /* 深色模式变量（紧跟基础变量，保持变量统一性） */
         :root.dark {
+            /* 为单词列表模态框添加暗模式纯白背景 */
+            --modal-dark-bg: rgba(255, 255, 255, 0.1);
             /* 背景色 */
             --page-bg: #2d2b3a;
             --card-bg: #3a384c;
@@ -259,7 +85,7 @@
             --scrollbar-thumb-hover: #888;
         }
 
-        /* 全局样式 */
+        /* 2. 全局样式（页面基础结构） */
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
@@ -271,30 +97,135 @@
             color: var(--text-primary);
         }
 
-        /* 主题切换按钮 - 明确是切换功能 */
-        .theme-switch-btn {
+        /* 底部状态样式（全局辅助元素，紧跟body） */
+        .page-bottom-status {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 20;
-            width: 120px;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--text-secondary);
+            font-weight: bold;
+            font-size: 0.6rem;
+            z-index: 5;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* 3. 按钮样式（全局复用组件，集中管理） */
+        /* 3.1 按钮通用样式 */
+        .btn-common {
             padding: 10px 20px;
             font-size: 16px;
+            border: none;
             border-radius: 5px;
             background-color: var(--card-bg);
             color: var(--text-primary);
-            border: none;
             cursor: pointer;
-            box-shadow: var(--shadow);
             transition: all 0.3s ease;
             text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: inherit;
+            font-weight: bold;
+            line-height: 1.2;
+            margin: 0;
         }
-        
-        .theme-switch-btn:hover {
+        .btn-common:hover {
             transform: scale(1.05);
         }
 
-        /* 左侧列表选择区 - 加sidebar前缀明确位置 */
+        /* 3.2 浮动按钮（顶部/底部悬浮按钮，如主题切换、侧边栏开关） */
+        .btn-floating {
+            position: fixed;
+            width: 120px;
+            box-shadow: var(--shadow);
+            z-index: 20;
+        }
+        /* 浮动按钮位置差异化 */
+        .mobile-sidebar-toggle {
+            top: 20px;
+            left: 20px;
+            display: none; /* 初始隐藏，响应式时显示 */
+        }
+        .theme-switch-btn {
+            top: 20px;
+            right: 20px;
+        }
+        .word-list-modal-btn {
+            bottom: 20px;
+            right: 20px;
+        }
+
+        /* 3.3 侧边栏按钮（列表选择、顺序切换） */
+        .btn-sidebar {
+            width: 100%;
+            box-sizing: border-box;
+            min-height: 60px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            background-color: var(--sidebar-list-bg);
+            color: var(--text-secondary);
+        }
+        /* 侧边栏按钮交互差异化 */
+        .list-select-btn:hover, .list-select-btn.active {
+            font-size: 22px;
+            background-color: var(--list-select-btn-active-bg);
+            color: var(--list-select-btn-active-text);
+        }
+        .order-toggle-btn:hover, .order-toggle-btn.active {
+            font-size: 22px;
+            color: var(--text-primary);
+        }
+        .order-toggle-btn[data-order="disordered"]:hover,
+        .order-toggle-btn[data-order="disordered"].active {
+            background-color: var(--order-toggle-disordered-hover);
+        }
+        .order-toggle-btn[data-order="ordered"]:hover,
+        .order-toggle-btn[data-order="ordered"].active {
+            background-color: var(--order-toggle-ordered);
+        }
+
+        /* 3.4 中央卡片功能按钮（上一个、显示释义、下一个） */
+        .card-btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: auto;
+            padding-top: 20px;
+            flex-wrap: wrap;
+        }
+        /* 功能按钮尺寸控制 */
+        .card-btn-group .btn-common {
+            padding: 15px 30px;
+            font-size: 20px;
+            min-width: 120px;
+            max-width: 200px;
+            flex: 1;
+        }
+        /* 功能按钮背景色差异化 */
+        #btn-prev-word {
+            background-color: var(--btn-prev-bg);
+        }
+        #btn-prev-word:hover {
+            background-color: var(--btn-prev-hover);
+        }
+        #btn-show-definition {
+            background-color: var(--btn-show-def-bg);
+        }
+        #btn-show-definition:hover {
+            background-color: var(--btn-show-def-hover);
+        }
+        #btn-next-word {
+            background-color: var(--btn-next-bg);
+        }
+        #btn-next-word:hover {
+            background-color: var(--btn-next-hover);
+        }
+
+        /* 4. 页面核心模块（从左到右、从上到下） */
+        /* 4.1 左侧侧边栏 */
         .sidebar-list-selector {
             width: 250px;
             background-color: var(--sidebar-list-bg);
@@ -310,7 +241,9 @@
             z-index: 100;
             transition: transform 0.3s ease;
             opacity: 0.95;
+            overflow-y: auto;
         }
+        /* 侧边栏内部子元素 */
         .sidebar-list-selector h3,
         .list-select-btn-container,
         .order-switch-group,
@@ -318,16 +251,13 @@
             padding-left: 20px;
             padding-right: 20px;
         }
-        
         .sidebar-list-selector h3 {
             color: var(--text-primary);
             margin-bottom: 10px;
-            border-bottom: 1px solid var(--border-color); /* 统一为1px */
+            border-bottom: 1px solid var(--border-color);
             padding-bottom: 10px;
             text-align: center;
         }
-        
-        /* 列表选择按钮容器 - 与按钮名同步 */
         .list-select-btn-container {
             width: 100%;
             display: flex;
@@ -335,8 +265,6 @@
             gap: 15px;
             box-sizing: border-box;
         }
-        
-        /* 顺序切换组 - 与按钮名同步 */
         .order-switch-group {
             width: 100%;
             display: flex;
@@ -345,81 +273,17 @@
             margin-top: auto;
             box-sizing: border-box;
         }
-        
-        /* 侧边栏列表信息 - 加sidebar前缀 */
         .sidebar-list-info {
             margin-top: 15px;
             padding-top: 15px;
             border-top: 1px solid var(--border-color);
-            font-size: 16px;
-            color: var(--text-secondary);
-            /* 为了与单词表底部保持一致，也只显示装饰线 */
+            /* 仅显示装饰线，隐藏文字 */
             font-size: 0;
             height: 1px;
             overflow: hidden;
         }
 
-        /* 侧边栏按钮通用样式 - 区分选择型和切换型 */
-        .list-select-btn, .order-toggle-btn {
-            padding: 15px 20px;
-            font-size: 18px;
-            border: none;
-            border-radius: 5px;
-            background-color: var(--sidebar-list-bg);
-            color: var(--text-secondary);
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.3s ease;
-            font-weight: bold;
-            width: 100%;
-            box-sizing: border-box;
-            min-height: 60px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .list-select-btn:hover, .list-select-btn.active,
-        .order-toggle-btn:hover, .order-toggle-btn.active {
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            font-weight: bold;
-        }
-
-        /* 列表选择按钮样式 - 明确是选择列表的按钮 */
-        .list-select-btn:hover {
-            font-size: 20px;
-            background-color: var(--list-select-btn-active-bg);
-            color: var(--list-select-btn-active-text);
-        }
-        
-        .list-select-btn.active {
-            font-size: 22px;
-            background-color: var(--list-select-btn-active-bg);
-            color: var(--list-select-btn-active-text);
-        }
-
-        /* 顺序切换按钮样式 - 明确是切换顺序的按钮 */
-        .order-toggle-btn:hover {
-            font-size: 20px;
-            color: var(--text-primary);
-        }
-        
-        .order-toggle-btn.active {
-            font-size: 22px;
-            color: var(--text-primary);
-        }
-        
-        .order-toggle-btn[data-order="disordered"]:hover,
-        .order-toggle-btn[data-order="disordered"].active {
-            background-color: var(--order-toggle-disordered-hover);
-        }
-        
-        .order-toggle-btn[data-order="ordered"]:hover,
-        .order-toggle-btn[data-order="ordered"].active {
-            background-color: var(--order-toggle-ordered);
-        }
-
-        /* 中央卡片容器 - 加central前缀明确位置 */
+        /* 4.2 中央单词卡片 */
         .central-card-wrapper {
             position: absolute;
             top: 50%;
@@ -433,7 +297,6 @@
             padding: 0 20px;
             box-sizing: border-box;
         }
-        
         .central-word-card {
             background-color: var(--card-bg);
             border-radius: 15px;
@@ -448,7 +311,7 @@
             display: flex;
             flex-direction: column;
         }
-        
+        /* 卡片顶部（进度条+索引） */
         .card-top-bar {
             display: flex;
             justify-content: space-between;
@@ -456,8 +319,6 @@
             margin-bottom: 30px;
             gap: 20px;
         }
-        
-        /* 进度条容器 - 明确是包裹进度条的容器 */
         .progress-bar-wrapper {
             flex-grow: 1;
             height: 10px;
@@ -465,15 +326,12 @@
             border-radius: 5px;
             overflow: hidden;
         }
-        
         .progress-bar {
             height: 100%;
             background-color: var(--progress-bar-fill);
             width: 0%;
             transition: width 0.3s ease;
         }
-        
-        /* 单词索引计数器 - 明确是索引计数 */
         .word-index-counter {
             font-size: 18px;
             color: var(--text-secondary);
@@ -481,7 +339,7 @@
             min-width: 120px;
             text-align: center;
         }
-        
+        /* 卡片内容（单词+释义） */
         .current-word {
             font-size: 60px;
             font-weight: bold;
@@ -490,8 +348,6 @@
             line-height: 1.2;
             word-break: break-word;
         }
-        
-        /* 释义容器 - 用container明确内容承载 */
         .definition-container {
             flex-grow: 1;
             overflow-y: auto;
@@ -499,7 +355,6 @@
             padding: 15px 10px;
             min-height: 180px;
         }
-        
         .current-definition {
             font-size: 28px;
             color: var(--text-secondary);
@@ -507,178 +362,192 @@
             opacity: 0;
             word-break: break-word;
         }
-        
         .current-definition.visible {
             opacity: 1;
             transition: opacity 0.2s ease;
         }
 
-        /* 底部功能按钮组 */
-        .card-btn-group {
+        /* 5. 特殊模块（弹窗） */
+        .word-list-modal {
             display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: auto;
-            padding-top: 20px;
-            flex-wrap: wrap;
-        }
-        
-        button {
-            padding: 15px 30px;
-            font-size: 20px;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            min-width: 120px;
-            color: var(--btn-text);
-            flex: 1;
-            max-width: 200px;
-        }
-        
-        #btn-prev-word {
-            background-color: var(--btn-prev-bg);
-        }
-        
-        #btn-prev-word:hover {
-            background-color: var(--btn-prev-hover);
-        }
-        
-        #btn-show-definition {
-            background-color: var(--btn-show-def-bg);
-        }
-        
-        #btn-show-definition:hover {
-            background-color: var(--btn-show-def-hover);
-        }
-        
-        #btn-next-word {
-            background-color: var(--btn-next-bg);
-        }
-        
-        #btn-next-word:hover {
-            background-color: var(--btn-next-hover);
-        }
-
-        /* 移动端侧边栏按钮 - 明确控制侧边栏 */
-        .mobile-sidebar-toggle {
-            display: none;
             position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 25;
-            width: 50px;
-            height: 50px;
-            background-color: var(--card-bg);
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            box-shadow: var(--shadow);
-            flex-direction: column;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px); /* 兼容Safari */
+            z-index: 1000;
             justify-content: center;
             align-items: center;
-            gap: 6px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
         }
-        
-        .mobile-sidebar-toggle span {
-            display: block;
-            width: 25px;
-            height: 3px;
-            background-color: var(--text-primary);
+        .word-list-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        /* 暗模式下弹窗背景 */
+        :root.dark .word-list-modal {
+            background-color: var(--modal-dark-bg);
+        }
+        /* 弹窗内容区 */
+        .word-list-modal-content {
+            background-color: var(--page-bg);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            width: 80%;
+            max-width: 1200px;
+            position: fixed;
+            top: 10%;
+            bottom: 10%;
+            padding: 2%;
+            display: flex;
+            flex-direction: column;
+        }
+        .word-list-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2%;
+            padding-bottom: 1.5%;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .word-list-modal-title {
+            text-align: left;
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin: 0;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .close-list-modal-btn {
+            background: none;
+            border: none;
+            font-size: 30px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 5px;
+            transition: color 0.3s ease;
+            margin-left: auto;
+        }
+        .close-list-modal-btn:hover {
+            color: var(--text-primary);
+        }
+        /* 弹窗单词列表区 */
+        .word-list-modal-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1%;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5%;
+            align-content: start;
+        }
+        .word-list-modal-item {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5%;
             transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        }
+        .word-list-modal-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+        }
+        .list-item-word {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        .list-item-definition {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+        /* 弹窗底部分割线 */
+        .word-list-modal-stats {
+            margin-top: 1.5%;
+            padding-top: 1.5%;
+            border-top: 1px solid var(--border-color);
+            min-height: 1px;
+            font-size: 16px;
+            color: var(--text-secondary);
+            text-align: center;
         }
 
-        /* 释义容器滚动条样式 */
+        /* 6. 滚动条样式（统一归类，便于查找） */
+        /* 侧边栏滚动条 */
+        .sidebar-list-selector::-webkit-scrollbar {
+            width: 12px;
+        }
+        .sidebar-list-selector::-webkit-scrollbar-track {
+            background: var(--progress-bar-bg);
+            border-radius: 6px;
+        }
+        .sidebar-list-selector::-webkit-scrollbar-thumb {
+            background: var(--progress-bar-fill);
+            border-radius: 6px;
+        }
+        .sidebar-list-selector::-webkit-scrollbar-thumb:hover {
+            background: var(--btn-show-def-hover);
+        }
+
+        /* 单词弹窗滚动条 */
+        .word-list-modal-container::-webkit-scrollbar {
+            width: 12px;
+        }
+        .word-list-modal-container::-webkit-scrollbar-track {
+            background: var(--progress-bar-bg);
+            border-radius: 6px;
+        }
+        .word-list-modal-container::-webkit-scrollbar-thumb {
+            background: var(--progress-bar-fill);
+            border-radius: 6px;
+        }
+        .word-list-modal-container::-webkit-scrollbar-thumb:hover {
+            background: var(--btn-show-def-hover);
+        }
+
+        /* 释义容器滚动条 */
         .definition-container::-webkit-scrollbar {
             width: 8px;
         }
-        
         .definition-container::-webkit-scrollbar-track {
             background: var(--scrollbar-track);
             border-radius: 4px;
         }
-        
         .definition-container::-webkit-scrollbar-thumb {
             background: var(--scrollbar-thumb);
             border-radius: 4px;
         }
-        
         .definition-container::-webkit-scrollbar-thumb:hover {
             background: var(--scrollbar-thumb-hover);
         }
 
-        /* 响应式设计 - 仅同步类名，不修改布局逻辑 */
-        @media (max-width: 1024px) {
-            .central-word-card {
-                padding: 30px 20px;
-                min-height: 450px;
-            }
-            
-            .current-word {
-                font-size: 50px;
-            }
-            
-            .current-definition {
-                font-size: 24px;
-            }
-            
-            button {
-                padding: 12px 25px;
-                font-size: 18px;
-                min-width: 100px;
-            }
-            
-            .word-list-modal-content {
-                width: 85%; /* 中等屏幕：85%宽度 */
-                max-width: none; /* 移除最大宽度限制 */
-                /* 使用top和bottom代替height，保持上下边距占屏幕10% */
-                top: 10%;
-                bottom: 10%;
-                padding: 25px; /* 中屏内边距 */
-                display: flex;
-                flex-direction: column;
-            }
-            
-            .word-list-modal-container {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-                gap: 12px;
-            }
-            
-            .word-list-modal-btn, .theme-switch-btn {
-                width: 100px;
-                padding: 8px 15px;
-                font-size: 14px;
-            }
-        }
-
+        /* 7. 响应式设计（按屏幕尺寸从大到小排序） */
         @media (max-width: 1300px) {
-            /* 移动端布局 */
+            /* 移动端侧边栏显示 */
             .mobile-sidebar-toggle {
                 display: flex;
             }
-            
-            .word-list-modal-content {
-                width: 80%; /* 默认大屏：80%宽度 */
-                max-width: 1200px; /* 默认大屏最大宽度 */
-                padding: 30px; /* 大屏内边距 */
-                /* 保持上下边距占屏幕10% */
-                top: 10%;
-                bottom: 10%;
-                display: flex;
-                flex-direction: column;
-            }
-            
+            /* 侧边栏默认隐藏，点击按钮展开 */
             .sidebar-list-selector {
                 transform: translateX(-100%);
                 width: 280px;
                 padding: 20px 0;
+                transition: transform 0.2s ease;
             }
-            
             .sidebar-list-selector.mobile-open {
                 transform: translateX(0);
             }
-            
+            /* 中央卡片调整 */
             .central-card-wrapper {
                 padding: 0 15px;
                 top: 50%;
@@ -686,188 +555,175 @@
                 transform: translate(-50%, -50%);
                 width: 100%;
             }
-            
             .central-word-card {
                 padding: 25px 20px;
                 min-height: 400px;
                 margin: 20px 0;
             }
-            
             .card-top-bar {
                 flex-direction: column;
                 gap: 15px;
                 margin-bottom: 20px;
             }
-            
             .progress-bar-wrapper {
                 width: 100%;
             }
-            
             .word-index-counter {
                 text-align: center;
                 min-width: auto;
             }
-            
             .current-word {
                 font-size: 40px;
                 margin-bottom: 20px;
             }
-            
             .current-definition {
                 font-size: 22px;
             }
-            
             .definition-container {
                 min-height: 150px;
                 margin: 5px 0 15px;
             }
-            
             .card-btn-group {
                 gap: 15px;
             }
-            
-            /* 按钮样式 - 确保在1300px媒体查询中明确定义 */
-            button {
+            /* 弹窗调整 */
+            .word-list-modal-content {
+                width: 80%;
+                max-width: 1200px;
+                padding: 30px;
+                top: 10%;
+                bottom: 10%;
+            }
+            .word-list-modal-container {
                 padding: 15px 20px;
-                font-size: 18px;
-                min-width: 90px;
-                max-width: none;
-                flex: 1;
-            }
-            
-            /* 特定按钮样式 */
-            .word-list-modal-btn, .theme-switch-btn {
-                width: 120px;
-                padding: 10px 20px;
-                font-size: 16px;
-            }
-            
-            /* 按钮位置 */
-            .theme-switch-btn {
-                top: 20px;
-                right: 20px;
-            }
-            
-            .word-list-modal-btn {
-                bottom: 20px;
-                right: 20px;
-            }
-            
-            .word-list-modal-container {
-                padding: 15px 20px; /* 确保左右padding */
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* 稍微减小最小宽度 */
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             }
         }
-        
+
         @media (max-width: 1024px) {
+            /* 中央卡片调整 */
+            .central-word-card {
+                padding: 30px 20px;
+                min-height: 450px;
+            }
+            .current-word {
+                font-size: 50px;
+            }
+            .current-definition {
+                font-size: 24px;
+            }
+            /* 按钮调整 */
+            .card-btn-group .btn-common {
+                padding: 12px 25px;
+                font-size: 18px;
+                min-width: 100px;
+            }
+            .btn-floating {
+                width: 100px;
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+            /* 弹窗调整 */
             .word-list-modal-content {
-                width: 85%; /* 中等屏幕：85%宽度 */
-                max-width: none; /* 移除最大宽度限制 */
-                padding: 1.8%; /* 中屏内边距使用百分比 */
-                top: 60px; /* 固定上边距 */
-                bottom: 60px; /* 固定下边距 */
-                display: flex;
-                flex-direction: column;
+                width: 85%;
+                max-width: none;
+                padding: 25px;
+                top: 10%;
+                bottom: 10%;
             }
             .word-list-modal-container {
-                padding: 1%; /* 使用百分比 */
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-                gap: 1.2%; /* 使用百分比 */
+                gap: 12px;
+            }
+            /* 弹窗二次调整（与上方1024px规则合并） */
+            .word-list-modal-content {
+                width: 85%;
+                max-width: none;
+                padding: 1.8%;
+                top: 80px;
+                bottom: 60px;
+            }
+            .word-list-modal-container {
+                padding: 1%;
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 1.2%;
             }
         }
-        
+
         @media (max-width: 768px) {
+            /* 弹窗调整 */
             .word-list-modal-content {
-                width: 90%; /* 小屏幕：90%宽度 */
-                padding: 1.5%; /* 小屏内边距使用百分比 */
-                top: 60px; /* 固定上边距 */
-                bottom: 60px; /* 固定下边距 */
-                display: flex;
-                flex-direction: column;
+                width: 90%;
+                padding: 1.5%;
+                top: 80px;
+                bottom: 60px;
             }
             .word-list-modal-container {
-                padding: 1%; /* 使用百分比 */
+                padding: 1%;
                 grid-template-columns: 1fr;
-                gap: 1.2%; /* 使用百分比 */
+                gap: 1.2%;
             }
         }
 
         @media (max-width: 480px) {
+            /* 中央卡片调整 */
             .current-word {
                 font-size: 36px;
             }
-            
             .current-definition {
                 font-size: 20px;
             }
-            
             .central-word-card {
                 padding: 20px 15px;
                 min-height: 350px;
             }
-            
-            .word-list-modal-content {
-                width: 95%;
-                padding: 1.2%; /* 超小屏内边距使用百分比 */
-                top: 60px; /* 固定上边距 */
-                bottom: 60px; /* 固定下边距 */
-                display: flex;
-                flex-direction: column;
-            }
-            .word-list-modal-container {
-                padding: 1%; /* 使用百分比 */
-                gap: 1%; /* 使用百分比 */
-            }
-            
-            button {
+            /* 按钮调整 */
+            .card-btn-group .btn-common {
                 padding: 12px 15px;
                 font-size: 16px;
                 min-width: 80px;
+                max-width: none;
             }
-            
             .card-btn-group {
                 gap: 10px;
             }
-            
             .word-index-counter {
                 font-size: 16px;
             }
-            
-            .word-list-modal-content {
-                padding: 1.2%; /* 使用百分比 */
-                display: flex;
-                flex-direction: column;
-            }
-            
-            .word-list-modal-title {
-                font-size: 22px;
-            }
-            
-            .word-list-modal-btn, .theme-switch-btn {
+            /* 浮动按钮调整 */
+            .btn-floating {
                 width: 80px;
                 padding: 6px 12px;
                 font-size: 12px;
             }
+            /* 弹窗调整 */
+            .word-list-modal-content {
+                width: 95%;
+                padding: 1.2%;
+                top: 80px;
+                bottom: 60px;
+            }
+            .word-list-modal-container {
+                padding: 1%;
+                gap: 1.2%;
+            }
+            .word-list-modal-title {
+                font-size: 22px;
+            }
         }
 
-        /* 触摸设备优化 */
+        /* 8. 触摸设备优化（最后处理，针对特殊交互） */
         @media (hover: none) and (pointer: coarse) {
-            button {
+            /* 按钮最小高度适配触摸 */
+            .btn-common {
                 min-height: 44px;
             }
-            
-            .list-select-btn, .order-toggle-btn {
-                min-height: 44px;
-                padding: 12px 15px;
-            }
-            
-            /* 移除移动端上的hover效果 */
+            /* 移除触摸设备上的hover效果 */
             .list-select-btn:hover, .order-toggle-btn:hover {
                 font-size: inherit;
                 background-color: var(--sidebar-list-bg);
                 color: var(--text-secondary);
             }
-            
             .list-select-btn.active:hover, .order-toggle-btn.active:hover {
                 font-size: 22px;
             }
@@ -875,24 +731,25 @@
     </style>
 </head>
 <body>
-    <!-- 移动端侧边栏按钮 - 明确控制侧边栏 -->
-    <button class="mobile-sidebar-toggle" id="mobile-sidebar-toggle">
-        <span></span>
-        <span></span>
-        <span></span>
-    </button>
+    <!-- 移动端侧边栏按钮 -->
+    <button class="btn-common btn-floating mobile-sidebar-toggle" id="mobile-sidebar-toggle">Select</button>
     
     <!-- 主题切换按钮 -->
-    <button class="theme-switch-btn" id="theme-switch-btn">Dark</button>
+    <button class="btn-common btn-floating theme-switch-btn" id="theme-switch-btn">Dark</button>
     
     <!-- 单词列表弹窗按钮 -->
-    <button class="word-list-modal-btn" id="word-list-modal-btn">Word List</button>
+    <button class="btn-common btn-floating word-list-modal-btn" id="word-list-modal-btn">Word List</button>
     
     <!-- 单词列表弹窗 -->
     <div class="word-list-modal" id="word-list-modal">
         <div class="word-list-modal-content">
             <div class="word-list-modal-header">
-                <h2 class="word-list-modal-title" id="word-list-modal-title">单词背诵表</h2>
+                <h2 class="word-list-modal-title" id="word-list-modal-title">
+                    <div style="display: flex; justify-content: space-between; width: 100%; box-sizing: border-box;">
+                        <span>${activeList}</span>
+                        <span>${wordLists[activeList].length} words</span>
+                    </div>
+                </h2>
             </div>
             <div class="word-list-modal-container" id="word-list-modal-container">
                 <!-- 单词列表内容将通过JavaScript动态生成 -->
@@ -907,14 +764,14 @@
     <div class="sidebar-list-selector" id="sidebar-list-selector">
         <h3>Select Word List</h3>
         <div class="list-select-btn-container">
-            <button class="list-select-btn active" data-list="Word List 1">Word List 1</button>
-            <button class="list-select-btn " data-list="Word List 2">Word List 2</button>
-            <button class="list-select-btn " data-list="Zayn's List">Zayn's List</button>
+            <button class="btn-common btn-sidebar list-select-btn active" data-list="Word List 1">Word List 1</button>
+            <button class="btn-common btn-sidebar list-select-btn " data-list="Word List 2">Word List 2</button>
+            <button class="btn-common btn-sidebar list-select-btn " data-list="Zayn's List">Zayn's List</button>
         </div>
         
         <div class="order-switch-group">
-            <button class="order-toggle-btn" data-order="disordered">Disordered</button>
-            <button class="order-toggle-btn active" data-order="ordered">Ordered</button>
+            <button class="btn-common btn-sidebar order-toggle-btn" data-order="disordered">Disordered</button>
+            <button class="btn-common btn-sidebar order-toggle-btn active" data-order="ordered">Ordered</button>
         </div>
         <div class="sidebar-list-info">
             <div id="sidebar-list-stats">Word List 1 (82 words)</div>
@@ -936,9 +793,9 @@
                 <div class="current-definition" id="current-definition"></div>
             </div>
             <div class="card-btn-group">
-                <button id="btn-prev-word">Previous</button>
-                <button id="btn-show-definition">Display Definition</button>
-                <button id="btn-next-word">Next</button>
+                <button class="btn-common" id="btn-prev-word">Previous</button>
+                <button class="btn-common" id="btn-show-definition">Display Definition</button>
+                <button class="btn-common" id="btn-next-word">Next</button>
             </div>
         </div>
     </div>
@@ -1052,12 +909,12 @@
         // 打开单词列表弹窗 - 变量名同步
         function openWordTable() {
             updateWordTable();
-            wordListModal.style.display = 'flex';
+            wordListModal.classList.add('active');
         }
         
         // 关闭单词列表弹窗 - 变量名同步
         function closeWordTable() {
-            wordListModal.style.display = 'none';
+            wordListModal.classList.remove('active');
         }
         
         // 更新单词列表弹窗内容 - 元素类名/ID同步
@@ -1362,14 +1219,21 @@
                 }
             });
             
-            // 绑定键盘事件 - 逻辑不变
+            // 绑定键盘事件 - 添加返回键关闭侧边栏和单词表
             document.addEventListener('keydown', (e) => {
                 if (e.key === ' ' || e.key === 'Enter') {
                     e.preventDefault();
                     showDefinition();
                 } else if (e.key === 'ArrowLeft') prevWord();
                 else if (e.key === 'ArrowRight') nextWord();
-                else if (e.key === 'Escape') closeWordTable();
+                else if (e.key === 'Escape') {
+                    // 关闭单词表
+                    closeWordTable();
+                    // 关闭移动端侧边栏（电脑模式下默认打开的侧边栏不受影响）
+                    if (sidebarListSelector.classList.contains('mobile-open')) {
+                        sidebarListSelector.classList.remove('mobile-open');
+                    }
+                }
             });
             
             // 触摸手势支持 - 逻辑不变
