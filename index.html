@@ -8,9 +8,9 @@
         /* 1. 基础变量定义（优先定义，供后续使用） */
         :root {
             /* 背景色 */
-            --page-bg: #fcfaf8;
+            --page-bg: #fef8ed;
             --card-bg: white;
-            --sidebar-list-bg: #fcfaf8;
+            --sidebar-list-bg: #fef8ed;
             
             /* 文本色 */
             --text-primary: #333;
@@ -38,10 +38,16 @@
             
             /* 其他 */
             --border-color: #ccc;
-            --shadow: 0 6px 12px rgba(0,0,0,0.15);
+            --shadow-primary: 0 6px 12px rgba(0,0,0,0.05);
+            --shadow-secondary: 0 4px 8px rgba(0,0,0,0.02);
             --scrollbar-track: #f1f1f1;
             --scrollbar-thumb: #bbb;
             --scrollbar-thumb-hover: #999;
+            
+            /* 新增：过渡动画变量（鼠标点击位置、扩散半径） */
+            --x: 0px;
+            --y: 0px;
+            --r: 0px;
         }
 
         /* 深色模式变量（紧跟基础变量，保持变量统一性） */
@@ -79,13 +85,46 @@
             
             /* 其他 */
             --border-color: #555;
-            --shadow: 0 6px 12px rgba(0,0,0,0.3);
+            --shadow-primary: 0 6px 12px rgba(255, 255, 255, 0.05);
+            --shadow-secondary: 0 4px 8px rgba(255, 255, 255, 0.02);
             --scrollbar-track: #4a485c;
             --scrollbar-thumb: #666;
             --scrollbar-thumb-hover: #888;
         }
 
-        /* 2. 全局样式（页面基础结构） */
+        /* 2. 亮暗模式丝滑过渡动画 */
+        /* 禁用默认过渡动画，自定义圆形扩散效果 */
+        ::view-transition-old(*) {
+            animation: none;
+        }
+        ::view-transition-new(*) {
+            animation: clip 0.4s cubic-bezier(1,0,0,1);
+        }
+        /* 控制层级：确保新状态在上方 */
+        ::view-transition-old(root) {
+            z-index: 1;
+        }
+        ::view-transition-new(root) {
+            z-index: 9999;
+        }
+        /* 深色模式下使用相同的动画（修复闪烁问题） */
+        html.dark::view-transition-old(*) {
+            animation: none;
+        }
+        html.dark::view-transition-new(*) {
+            animation: clip 0.4s cubic-bezier(1,0,0,1);
+        }
+        /* 圆形扩散动画：从鼠标点击位置扩散 */
+        @keyframes clip {
+            from {
+                clip-path: circle(0% at var(--x) var(--y));
+            }
+            to {
+                clip-path: circle(var(--r) at var(--x) var(--y));
+            }
+        }
+
+        /* 3. 全局样式（页面基础结构） */
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
@@ -114,14 +153,14 @@
         /* 3. 按钮样式（全局复用组件，集中管理） */
         /* 3.1 按钮通用样式 */
         .btn-common {
-            padding: 10px 20px;
+            padding: 10px 10px;
             font-size: 16px;
             border: none;
-            border-radius: 5px;
+            border-radius: 15px;
             background-color: var(--card-bg);
             color: var(--text-primary);
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             text-align: center;
             display: flex;
             justify-content: center;
@@ -139,8 +178,10 @@
         .btn-floating {
             position: fixed;
             width: 120px;
-            box-shadow: var(--shadow);
             z-index: 20;
+        }
+        .btn-floating:hover {
+            box-shadow: var(--shadow-primary);
         }
         /* 浮动按钮位置差异化 */
         .mobile-sidebar-toggle {
@@ -173,10 +214,12 @@
             font-size: 22px;
             background-color: var(--list-select-btn-active-bg);
             color: var(--list-select-btn-active-text);
+            box-shadow: var(--shadow-primary);
         }
         .order-toggle-btn:hover, .order-toggle-btn.active {
             font-size: 22px;
             color: var(--text-primary);
+            box-shadow: var(--shadow-primary);
         }
         .order-toggle-btn[data-order="disordered"]:hover,
         .order-toggle-btn[data-order="disordered"].active {
@@ -230,7 +273,7 @@
             width: 250px;
             background-color: var(--sidebar-list-bg);
             padding: 20px 0;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow-primary);
             display: flex;
             flex-direction: column;
             gap: 15px;
@@ -239,7 +282,7 @@
             top: 0;
             height: 100vh;
             z-index: 100;
-            transition: transform 0.3s ease;
+            transition: transform 0.2s ease;
             opacity: 0.95;
             overflow-y: auto;
         }
@@ -300,7 +343,7 @@
         .central-word-card {
             background-color: var(--card-bg);
             border-radius: 15px;
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow-primary);
             width: 100%;
             max-width: 800px;
             padding: 40px 30px;
@@ -323,14 +366,14 @@
             flex-grow: 1;
             height: 10px;
             background-color: var(--progress-bar-bg);
-            border-radius: 5px;
+            border-radius: 6px;
             overflow: hidden;
         }
         .progress-bar {
             height: 100%;
             background-color: var(--progress-bar-fill);
             width: 0%;
-            transition: width 0.3s ease;
+            transition: width 0.2s ease;
         }
         .word-index-counter {
             font-size: 18px;
@@ -397,7 +440,7 @@
         .word-list-modal-content {
             background-color: var(--page-bg);
             border-radius: 15px;
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow-primary);
             width: 80%;
             max-width: 1200px;
             position: fixed;
@@ -432,7 +475,7 @@
             color: var(--text-secondary);
             cursor: pointer;
             padding: 5px;
-            transition: color 0.3s ease;
+            transition: color 0.2s ease;
             margin-left: auto;
         }
         .close-list-modal-btn:hover {
@@ -450,15 +493,14 @@
         }
         .word-list-modal-item {
             background-color: var(--card-bg);
-            border-radius: 10px;
+            border-radius: 15px;
             padding: 1.5%;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             cursor: pointer;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
         }
         .word-list-modal-item:hover {
             transform: translateY(-2px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+            box-shadow: var(--shadow-primary);
         }
         .list-item-word {
             font-size: 20px;
@@ -521,11 +563,11 @@
         }
         .definition-container::-webkit-scrollbar-track {
             background: var(--scrollbar-track);
-            border-radius: 4px;
+            border-radius: 6px;
         }
         .definition-container::-webkit-scrollbar-thumb {
             background: var(--scrollbar-thumb);
-            border-radius: 4px;
+            border-radius: 6px;
         }
         .definition-container::-webkit-scrollbar-thumb:hover {
             background: var(--scrollbar-thumb-hover);
@@ -829,7 +871,7 @@
         console.log('Word lists loaded:', Object.keys(wordLists));
         console.log('Current words:', currentWords);
 
-        // ========== 主题功能 ==========
+        // ========== 主题功能（核心修改：丝滑过渡） ==========
         // 初始化主题 - 逻辑不变，仅修改元素变量名
         function initTheme() {
             if (localStorage.getItem('theme') === 'dark' ||
@@ -838,21 +880,57 @@
                 themeSwitchBtn.textContent = 'Dark';
             } else {
                 html.classList.remove('dark');
-                themeSwitchBtn.textContent = 'Light';
+                themeSwitchBtn.textContent = 'Light Mode';
             }
         }
 
-        // 主题切换事件 - 变量名同步
-        themeSwitchBtn.addEventListener('click', () => {
-            const isDarkNow = html.classList.contains('dark');
-            if (isDarkNow) {
-                html.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-                themeSwitchBtn.textContent = 'Light';
+        // 新增：计算鼠标位置和扩散半径（用于过渡动画）
+        function calculateTransitionParams(e) {
+            const x = e.clientX;
+            const y = e.clientY;
+            // 计算从点击位置到屏幕对角的最大半径（确保动画覆盖全屏）
+            const endRadius = Math.hypot(
+                Math.max(x, innerWidth - x),
+                Math.max(y, innerHeight - y)
+            );
+            // 设置动画变量（供CSS使用）
+            html.style.setProperty('--x', x + 'px');
+            html.style.setProperty('--y', y + 'px');
+            html.style.setProperty('--r', endRadius + 'px');
+        }
+
+        // 主题切换事件（修改核心：加入View Transitions API）
+        themeSwitchBtn.addEventListener('click', (e) => {
+            // 1. 计算动画参数（鼠标点击位置、扩散半径）
+            calculateTransitionParams(e);
+            
+            // 2. 判断浏览器是否支持View Transitions API（兼容处理）
+            if (document.startViewTransition) {
+                // 支持：用API包裹主题切换逻辑，实现丝滑过渡
+                document.startViewTransition(() => {
+                    const isDarkNow = html.classList.contains('dark');
+                    if (isDarkNow) {
+                        html.classList.remove('dark');
+                        localStorage.setItem('theme', 'light');
+                        themeSwitchBtn.textContent = 'Light Mode';
+                    } else {
+                        html.classList.add('dark');
+                        localStorage.setItem('theme', 'dark');
+                        themeSwitchBtn.textContent = 'Dark Mode';
+                    }
+                });
             } else {
-                html.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-                themeSwitchBtn.textContent = 'Dark';
+                // 不支持：降级为原逻辑（无动画）
+                const isDarkNow = html.classList.contains('dark');
+                if (isDarkNow) {
+                    html.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                    themeSwitchBtn.textContent = 'Light Mode';
+                } else {
+                    html.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                    themeSwitchBtn.textContent = 'Dark Mode';
+                }
             }
         });
         
