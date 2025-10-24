@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>六级词汇闪过 | Word Lists</title>
     <style>
-        /* 基础变量定义 */
+        /* 基础变量定义 - 与修改后的元素名同步 */
         :root {
             /* 背景色 */
-            --bg-color: #fcfaf8;
+            --page-bg: #fcfaf8;
             --card-bg: white;
-            --list-selector-bg: #fcfaf8;
+            --sidebar-list-bg: #fcfaf8;
             
             /* 文本色 */
             --text-primary: #333;
@@ -18,23 +18,23 @@
             --btn-text: #000;
             
             /* 进度条 */
-            --progress-bg: #f1f1f1;
-            --progress-fill: #ff99cc;
+            --progress-bar-bg: #f1f1f1;
+            --progress-bar-fill: #ff99cc;
             
             /* 功能按钮 */
-            --prev-btn: #cccccc;
-            --prev-btn-hover: #999999;
-            --show-btn: #ff99cc;
-            --show-btn-hover: #ff6699;
-            --next-btn: #42a5f5;
-            --next-btn-hover: #1876F3;
+            --btn-prev-bg: #cccccc;
+            --btn-prev-hover: #999999;
+            --btn-show-def-bg: #ff99cc;
+            --btn-show-def-hover: #ff6699;
+            --btn-next-bg: #42a5f5;
+            --btn-next-hover: #1876F3;
             
-            /* 左侧按钮 */
-            --order-btn-disordered: var(--prev-btn);
-            --order-btn-disordered-hover: var(--prev-btn);
-            --order-btn-ordered: #b7e4c7;
-            --list-btn-active-bg: var(--card-bg);
-            --list-btn-active-text: #333;
+            /* 侧边栏按钮 */
+            --order-toggle-disordered: var(--btn-prev-bg);
+            --order-toggle-disordered-hover: var(--btn-prev-bg);
+            --order-toggle-ordered: #b7e4c7;
+            --list-select-btn-active-bg: var(--card-bg);
+            --list-select-btn-active-text: #333;
             
             /* 其他 */
             --border-color: #ccc;
@@ -44,8 +44,8 @@
             --scrollbar-thumb-hover: #999;
         }
 
-        /* 底部状态样式 */
-        .bottom-status {
+        /* 底部状态样式 - 明确页面底部定位 */
+        .page-bottom-status {
             position: fixed;
             bottom: 2px;
             left: 50%;
@@ -58,12 +58,174 @@
             margin: 0;
         }
 
-        /* 深色模式变量 */
+        /* 单词列表弹窗按钮 - 明确功能是打开弹窗 */
+        .word-list-modal-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 20;
+            width: 120px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .word-list-modal-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* 单词列表弹窗样式 - 替换table为list-modal，消除歧义 */
+        .word-list-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .word-list-modal-content {
+            background-color: var(--page-bg);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            width: 80%;  /* 默认大屏(>1024px)：80%宽度 */
+            max-width: 1200px; /* 默认大屏最大宽度 */
+            position: fixed;
+            top: 60px; /* 上边距固定值 */
+            bottom: 60px; /* 下边距固定值 */
+            padding: 2%; /* 大屏内边距使用百分比 */
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .word-list-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2%; /* 使用百分比 */
+            padding-bottom: 1.5%; /* 使用百分比 */
+            border-bottom: 1px solid var(--border-color); /* 统一为1px */
+        }
+        
+        .word-list-modal-title {
+            text-align: left;
+        }
+        
+        /* 单词列表弹窗底部分割线 - 只显示装饰线 */
+        .word-list-modal-stats {
+            margin-top: 1.5%;
+            padding-top: 1.5%;
+            border-top: 1px solid var(--border-color);
+            min-height: 1px; /* 确保分割线可见 */
+        }
+        
+        .word-list-modal-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin: 0;
+            text-align: center;
+        }
+        
+        .close-list-modal-btn {
+            background: none;
+            border: none;
+            font-size: 30px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 5px;
+            transition: color 0.3s ease;
+            margin-left: auto;
+        }
+        
+        .close-list-modal-btn:hover {
+            color: var(--text-primary);
+        }
+        
+        .word-list-modal-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1%; /* 使用百分比 */
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5%; /* 使用百分比 */
+            align-content: start;
+        }
+        
+        /* 单词列表弹窗滚动条样式 */
+        .word-list-modal-container::-webkit-scrollbar {
+            width: 12px;
+        }
+        
+        .word-list-modal-container::-webkit-scrollbar-track {
+            background: var(--progress-bar-bg);
+            border-radius: 6px;
+        }
+        
+        .word-list-modal-container::-webkit-scrollbar-thumb {
+            background: var(--progress-bar-fill);
+            border-radius: 6px;
+        }
+        
+        .word-list-modal-container::-webkit-scrollbar-thumb:hover {
+            background: var(--btn-show-def-hover);
+        }
+        
+        .word-list-modal-item {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5%; /* 使用百分比 */
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .word-list-modal-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-color: var(--btn-show-def-bg);
+        }
+        
+        .list-item-word {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .list-item-definition {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+        
+        .word-list-modal-stats {
+            margin-top: 1.5%; /* 使用百分比 */
+            padding-top: 1.5%; /* 使用百分比 */
+            border-top: 1px solid var(--border-color);
+            font-size: 16px;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        /* 深色模式变量 - 与基础变量同步 */
         :root.dark {
             /* 背景色 */
-            --bg-color: #2d2b3a;
+            --page-bg: #2d2b3a;
             --card-bg: #3a384c;
-            --list-selector-bg: #2d2b3a;
+            --sidebar-list-bg: #2d2b3a;
             
             /* 文本色 */
             --text-primary: #f0f0f0;
@@ -71,23 +233,23 @@
             --btn-text: white;
             
             /* 进度条 */
-            --progress-bg: #4a485c;
-            --progress-fill: #d64187;
+            --progress-bar-bg: #4a485c;
+            --progress-bar-fill: #d64187;
             
             /* 功能按钮 */
-            --prev-btn: #555;
-            --prev-btn-hover: #777;
-            --show-btn: #d64187;
-            --show-btn-hover: #b8326d;
-            --next-btn: #2563eb;
-            --next-btn-hover: #1d4ed8;
+            --btn-prev-bg: #555;
+            --btn-prev-hover: #777;
+            --btn-show-def-bg: #d64187;
+            --btn-show-def-hover: #b8326d;
+            --btn-next-bg: #2563eb;
+            --btn-next-hover: #1d4ed8;
             
-            /* 左侧按钮 */
-            --order-btn-disordered: var(--prev-btn);
-            --order-btn-disordered-hover: var(--prev-btn);
-            --order-btn-ordered: #166534;
-            --list-btn-active-bg: #3a384c;
-            --list-btn-active-text: #fff;
+            /* 侧边栏按钮 */
+            --order-toggle-disordered: var(--btn-prev-bg);
+            --order-toggle-disordered-hover: var(--btn-prev-bg);
+            --order-toggle-ordered: #166534;
+            --list-select-btn-active-bg: #3a384c;
+            --list-select-btn-active-text: #fff;
             
             /* 其他 */
             --border-color: #555;
@@ -102,15 +264,15 @@
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: var(--bg-color);
+            background-color: var(--page-bg);
             font-size: 1.2em;
             min-height: 100vh;
             position: relative;
             color: var(--text-primary);
         }
 
-        /* 主题切换按钮 */
-        .theme-toggle {
+        /* 主题切换按钮 - 明确是切换功能 */
+        .theme-switch-btn {
             position: fixed;
             top: 20px;
             right: 20px;
@@ -128,14 +290,14 @@
             text-align: center;
         }
         
-        .theme-toggle:hover {
+        .theme-switch-btn:hover {
             transform: scale(1.05);
         }
 
-        /* 左侧列表选择区 */
-        .list-selector {
+        /* 左侧列表选择区 - 加sidebar前缀明确位置 */
+        .sidebar-list-selector {
             width: 250px;
-            background-color: var(--list-selector-bg);
+            background-color: var(--sidebar-list-bg);
             padding: 20px 0;
             box-shadow: 2px 0 5px rgba(0,0,0,0.1);
             display: flex;
@@ -149,23 +311,24 @@
             transition: transform 0.3s ease;
             opacity: 0.95;
         }
-        .list-selector h3,
-        .list-btn-container,
-        .order-toggle-group,
-        .list-info {
+        .sidebar-list-selector h3,
+        .list-select-btn-container,
+        .order-switch-group,
+        .sidebar-list-info {
             padding-left: 20px;
             padding-right: 20px;
         }
         
-        .list-selector h3 {
+        .sidebar-list-selector h3 {
             color: var(--text-primary);
             margin-bottom: 10px;
-            border-bottom: 2px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color); /* 统一为1px */
             padding-bottom: 10px;
             text-align: center;
         }
         
-        .list-btn-container {
+        /* 列表选择按钮容器 - 与按钮名同步 */
+        .list-select-btn-container {
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -173,7 +336,8 @@
             box-sizing: border-box;
         }
         
-        .order-toggle-group {
+        /* 顺序切换组 - 与按钮名同步 */
+        .order-switch-group {
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -182,21 +346,26 @@
             box-sizing: border-box;
         }
         
-        .list-info {
+        /* 侧边栏列表信息 - 加sidebar前缀 */
+        .sidebar-list-info {
             margin-top: 15px;
             padding-top: 15px;
             border-top: 1px solid var(--border-color);
             font-size: 16px;
             color: var(--text-secondary);
+            /* 为了与单词表底部保持一致，也只显示装饰线 */
+            font-size: 0;
+            height: 1px;
+            overflow: hidden;
         }
 
-        /* 左侧按钮通用样式 */
-        .list-btn, .order-btn {
+        /* 侧边栏按钮通用样式 - 区分选择型和切换型 */
+        .list-select-btn, .order-toggle-btn {
             padding: 15px 20px;
             font-size: 18px;
             border: none;
             border-radius: 5px;
-            background-color: var(--list-selector-bg);
+            background-color: var(--sidebar-list-bg);
             color: var(--text-secondary);
             cursor: pointer;
             text-align: center;
@@ -210,48 +379,48 @@
             text-overflow: ellipsis;
         }
         
-        .list-btn:hover, .list-btn.active,
-        .order-btn:hover, .order-btn.active {
+        .list-select-btn:hover, .list-select-btn.active,
+        .order-toggle-btn:hover, .order-toggle-btn.active {
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             font-weight: bold;
         }
 
-        /* 列表按钮样式 */
-        .list-btn:hover {
+        /* 列表选择按钮样式 - 明确是选择列表的按钮 */
+        .list-select-btn:hover {
             font-size: 20px;
-            background-color: var(--list-btn-active-bg);
-            color: var(--list-btn-active-text);
+            background-color: var(--list-select-btn-active-bg);
+            color: var(--list-select-btn-active-text);
         }
         
-        .list-btn.active {
+        .list-select-btn.active {
             font-size: 22px;
-            background-color: var(--list-btn-active-bg);
-            color: var(--list-btn-active-text);
+            background-color: var(--list-select-btn-active-bg);
+            color: var(--list-select-btn-active-text);
         }
 
-        /* 顺序按钮样式 */
-        .order-btn:hover {
+        /* 顺序切换按钮样式 - 明确是切换顺序的按钮 */
+        .order-toggle-btn:hover {
             font-size: 20px;
             color: var(--text-primary);
         }
         
-        .order-btn.active {
+        .order-toggle-btn.active {
             font-size: 22px;
             color: var(--text-primary);
         }
         
-        .order-btn[data-order="disordered"]:hover,
-        .order-btn[data-order="disordered"].active {
-            background-color: var(--order-btn-disordered-hover);
+        .order-toggle-btn[data-order="disordered"]:hover,
+        .order-toggle-btn[data-order="disordered"].active {
+            background-color: var(--order-toggle-disordered-hover);
         }
         
-        .order-btn[data-order="ordered"]:hover,
-        .order-btn[data-order="ordered"].active {
-            background-color: var(--order-btn-ordered);
+        .order-toggle-btn[data-order="ordered"]:hover,
+        .order-toggle-btn[data-order="ordered"].active {
+            background-color: var(--order-toggle-ordered);
         }
 
-        /* 单词卡片样式 */
-        .card-container {
+        /* 中央卡片容器 - 加central前缀明确位置 */
+        .central-card-wrapper {
             position: absolute;
             top: 50%;
             left: 50%;
@@ -265,7 +434,7 @@
             box-sizing: border-box;
         }
         
-        .card {
+        .central-word-card {
             background-color: var(--card-bg);
             border-radius: 15px;
             box-shadow: var(--shadow);
@@ -280,7 +449,7 @@
             flex-direction: column;
         }
         
-        .card-top {
+        .card-top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -288,22 +457,24 @@
             gap: 20px;
         }
         
-        .progress-container {
+        /* 进度条容器 - 明确是包裹进度条的容器 */
+        .progress-bar-wrapper {
             flex-grow: 1;
             height: 10px;
-            background-color: var(--progress-bg);
+            background-color: var(--progress-bar-bg);
             border-radius: 5px;
             overflow: hidden;
         }
         
         .progress-bar {
             height: 100%;
-            background-color: var(--progress-fill);
+            background-color: var(--progress-bar-fill);
             width: 0%;
             transition: width 0.3s ease;
         }
         
-        .word-counter {
+        /* 单词索引计数器 - 明确是索引计数 */
+        .word-index-counter {
             font-size: 18px;
             color: var(--text-secondary);
             font-weight: 500;
@@ -311,7 +482,7 @@
             text-align: center;
         }
         
-        .word {
+        .current-word {
             font-size: 60px;
             font-weight: bold;
             color: var(--text-primary);
@@ -320,7 +491,8 @@
             word-break: break-word;
         }
         
-        .definition-wrapper {
+        /* 释义容器 - 用container明确内容承载 */
+        .definition-container {
             flex-grow: 1;
             overflow-y: auto;
             margin: 10px 0 20px;
@@ -328,7 +500,7 @@
             min-height: 180px;
         }
         
-        .definition {
+        .current-definition {
             font-size: 28px;
             color: var(--text-secondary);
             line-height: 1.3;
@@ -336,13 +508,13 @@
             word-break: break-word;
         }
         
-        .definition.visible {
+        .current-definition.visible {
             opacity: 1;
             transition: opacity 0.2s ease;
         }
 
-        /* 底部功能按钮 */
-        .buttons {
+        /* 底部功能按钮组 */
+        .card-btn-group {
             display: flex;
             justify-content: center;
             gap: 20px;
@@ -365,32 +537,32 @@
             max-width: 200px;
         }
         
-        #prev-word {
-            background-color: var(--prev-btn);
+        #btn-prev-word {
+            background-color: var(--btn-prev-bg);
         }
         
-        #prev-word:hover {
-            background-color: var(--prev-btn-hover);
+        #btn-prev-word:hover {
+            background-color: var(--btn-prev-hover);
         }
         
-        #show-definition {
-            background-color: var(--show-btn);
+        #btn-show-definition {
+            background-color: var(--btn-show-def-bg);
         }
         
-        #show-definition:hover {
-            background-color: var(--show-btn-hover);
+        #btn-show-definition:hover {
+            background-color: var(--btn-show-def-hover);
         }
         
-        #next-word {
-            background-color: var(--next-btn);
+        #btn-next-word {
+            background-color: var(--btn-next-bg);
         }
         
-        #next-word:hover {
-            background-color: var(--next-btn-hover);
+        #btn-next-word:hover {
+            background-color: var(--btn-next-hover);
         }
 
-        /* 移动端菜单按钮 */
-        .mobile-menu-toggle {
+        /* 移动端侧边栏按钮 - 明确控制侧边栏 */
+        .mobile-sidebar-toggle {
             display: none;
             position: fixed;
             top: 20px;
@@ -409,7 +581,7 @@
             gap: 6px;
         }
         
-        .mobile-menu-toggle span {
+        .mobile-sidebar-toggle span {
             display: block;
             width: 25px;
             height: 3px;
@@ -417,37 +589,37 @@
             transition: all 0.3s ease;
         }
 
-        /* 滚动条样式 */
-        .definition-wrapper::-webkit-scrollbar {
+        /* 释义容器滚动条样式 */
+        .definition-container::-webkit-scrollbar {
             width: 8px;
         }
         
-        .definition-wrapper::-webkit-scrollbar-track {
+        .definition-container::-webkit-scrollbar-track {
             background: var(--scrollbar-track);
             border-radius: 4px;
         }
         
-        .definition-wrapper::-webkit-scrollbar-thumb {
+        .definition-container::-webkit-scrollbar-thumb {
             background: var(--scrollbar-thumb);
             border-radius: 4px;
         }
         
-        .definition-wrapper::-webkit-scrollbar-thumb:hover {
+        .definition-container::-webkit-scrollbar-thumb:hover {
             background: var(--scrollbar-thumb-hover);
         }
 
-        /* 响应式设计 */
+        /* 响应式设计 - 仅同步类名，不修改布局逻辑 */
         @media (max-width: 1024px) {
-            .card {
+            .central-word-card {
                 padding: 30px 20px;
                 min-height: 450px;
             }
             
-            .word {
+            .current-word {
                 font-size: 50px;
             }
             
-            .definition {
+            .current-definition {
                 font-size: 24px;
             }
             
@@ -456,25 +628,58 @@
                 font-size: 18px;
                 min-width: 100px;
             }
+            
+            .word-list-modal-content {
+                width: 85%; /* 中等屏幕：85%宽度 */
+                max-width: none; /* 移除最大宽度限制 */
+                /* 使用top和bottom代替height，保持上下边距占屏幕10% */
+                top: 10%;
+                bottom: 10%;
+                padding: 25px; /* 中屏内边距 */
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .word-list-modal-container {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 12px;
+            }
+            
+            .word-list-modal-btn, .theme-switch-btn {
+                width: 100px;
+                padding: 8px 15px;
+                font-size: 14px;
+            }
         }
 
         @media (max-width: 1300px) {
             /* 移动端布局 */
-            .mobile-menu-toggle {
+            .mobile-sidebar-toggle {
                 display: flex;
             }
             
-            .list-selector {
+            .word-list-modal-content {
+                width: 80%; /* 默认大屏：80%宽度 */
+                max-width: 1200px; /* 默认大屏最大宽度 */
+                padding: 30px; /* 大屏内边距 */
+                /* 保持上下边距占屏幕10% */
+                top: 10%;
+                bottom: 10%;
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .sidebar-list-selector {
                 transform: translateX(-100%);
                 width: 280px;
                 padding: 20px 0;
             }
             
-            .list-selector.mobile-open {
+            .sidebar-list-selector.mobile-open {
                 transform: translateX(0);
             }
             
-            .card-container {
+            .central-card-wrapper {
                 padding: 0 15px;
                 top: 50%;
                 left: 50%;
@@ -482,45 +687,46 @@
                 width: 100%;
             }
             
-            .card {
+            .central-word-card {
                 padding: 25px 20px;
                 min-height: 400px;
                 margin: 20px 0;
             }
             
-            .card-top {
+            .card-top-bar {
                 flex-direction: column;
                 gap: 15px;
                 margin-bottom: 20px;
             }
             
-            .progress-container {
+            .progress-bar-wrapper {
                 width: 100%;
             }
             
-            .word-counter {
+            .word-index-counter {
                 text-align: center;
                 min-width: auto;
             }
             
-            .word {
+            .current-word {
                 font-size: 40px;
                 margin-bottom: 20px;
             }
             
-            .definition {
+            .current-definition {
                 font-size: 22px;
             }
             
-            .definition-wrapper {
+            .definition-container {
                 min-height: 150px;
                 margin: 5px 0 15px;
             }
             
-            .buttons {
+            .card-btn-group {
                 gap: 15px;
             }
             
+            /* 按钮样式 - 确保在1300px媒体查询中明确定义 */
             button {
                 padding: 15px 20px;
                 font-size: 18px;
@@ -529,27 +735,88 @@
                 flex: 1;
             }
             
-            .theme-toggle {
+            /* 特定按钮样式 */
+            .word-list-modal-btn, .theme-switch-btn {
+                width: 120px;
+                padding: 10px 20px;
+                font-size: 16px;
+            }
+            
+            /* 按钮位置 */
+            .theme-switch-btn {
                 top: 20px;
                 right: 20px;
-                width: 100px;
-                padding: 8px 15px;
-                font-size: 14px;
+            }
+            
+            .word-list-modal-btn {
+                bottom: 20px;
+                right: 20px;
+            }
+            
+            .word-list-modal-container {
+                padding: 15px 20px; /* 确保左右padding */
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* 稍微减小最小宽度 */
+            }
+        }
+        
+        @media (max-width: 1024px) {
+            .word-list-modal-content {
+                width: 85%; /* 中等屏幕：85%宽度 */
+                max-width: none; /* 移除最大宽度限制 */
+                padding: 1.8%; /* 中屏内边距使用百分比 */
+                top: 60px; /* 固定上边距 */
+                bottom: 60px; /* 固定下边距 */
+                display: flex;
+                flex-direction: column;
+            }
+            .word-list-modal-container {
+                padding: 1%; /* 使用百分比 */
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 1.2%; /* 使用百分比 */
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .word-list-modal-content {
+                width: 90%; /* 小屏幕：90%宽度 */
+                padding: 1.5%; /* 小屏内边距使用百分比 */
+                top: 60px; /* 固定上边距 */
+                bottom: 60px; /* 固定下边距 */
+                display: flex;
+                flex-direction: column;
+            }
+            .word-list-modal-container {
+                padding: 1%; /* 使用百分比 */
+                grid-template-columns: 1fr;
+                gap: 1.2%; /* 使用百分比 */
             }
         }
 
         @media (max-width: 480px) {
-            .word {
+            .current-word {
                 font-size: 36px;
             }
             
-            .definition {
+            .current-definition {
                 font-size: 20px;
             }
             
-            .card {
+            .central-word-card {
                 padding: 20px 15px;
                 min-height: 350px;
+            }
+            
+            .word-list-modal-content {
+                width: 95%;
+                padding: 1.2%; /* 超小屏内边距使用百分比 */
+                top: 60px; /* 固定上边距 */
+                bottom: 60px; /* 固定下边距 */
+                display: flex;
+                flex-direction: column;
+            }
+            .word-list-modal-container {
+                padding: 1%; /* 使用百分比 */
+                gap: 1%; /* 使用百分比 */
             }
             
             button {
@@ -558,12 +825,28 @@
                 min-width: 80px;
             }
             
-            .buttons {
+            .card-btn-group {
                 gap: 10px;
             }
             
-            .word-counter {
+            .word-index-counter {
                 font-size: 16px;
+            }
+            
+            .word-list-modal-content {
+                padding: 1.2%; /* 使用百分比 */
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .word-list-modal-title {
+                font-size: 22px;
+            }
+            
+            .word-list-modal-btn, .theme-switch-btn {
+                width: 80px;
+                padding: 6px 12px;
+                font-size: 12px;
             }
         }
 
@@ -573,80 +856,98 @@
                 min-height: 44px;
             }
             
-            .list-btn, .order-btn {
+            .list-select-btn, .order-toggle-btn {
                 min-height: 44px;
                 padding: 12px 15px;
             }
             
             /* 移除移动端上的hover效果 */
-            .list-btn:hover, .order-btn:hover {
+            .list-select-btn:hover, .order-toggle-btn:hover {
                 font-size: inherit;
-                background-color: var(--list-selector-bg);
+                background-color: var(--sidebar-list-bg);
                 color: var(--text-secondary);
             }
             
-            .list-btn.active:hover, .order-btn.active:hover {
+            .list-select-btn.active:hover, .order-toggle-btn.active:hover {
                 font-size: 22px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- 移动端菜单按钮 -->
-    <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+    <!-- 移动端侧边栏按钮 - 明确控制侧边栏 -->
+    <button class="mobile-sidebar-toggle" id="mobile-sidebar-toggle">
         <span></span>
         <span></span>
         <span></span>
     </button>
     
     <!-- 主题切换按钮 -->
-    <button class="theme-toggle" id="theme-toggle">Dark</button>
+    <button class="theme-switch-btn" id="theme-switch-btn">Dark</button>
+    
+    <!-- 单词列表弹窗按钮 -->
+    <button class="word-list-modal-btn" id="word-list-modal-btn">Word List</button>
+    
+    <!-- 单词列表弹窗 -->
+    <div class="word-list-modal" id="word-list-modal">
+        <div class="word-list-modal-content">
+            <div class="word-list-modal-header">
+                <h2 class="word-list-modal-title" id="word-list-modal-title">单词背诵表</h2>
+            </div>
+            <div class="word-list-modal-container" id="word-list-modal-container">
+                <!-- 单词列表内容将通过JavaScript动态生成 -->
+            </div>
+            <div class="word-list-modal-stats" id="word-list-modal-stats">
+                <!-- 统计信息将通过JavaScript动态生成 -->
+            </div>
+        </div>
+    </div>
     
     <!-- 左侧列表选择器 -->
-    <div class="list-selector" id="list-selector">
+    <div class="sidebar-list-selector" id="sidebar-list-selector">
         <h3>Select Word List</h3>
-        <div class="list-btn-container">
-            <button class="list-btn active" data-list="Word List 1">Word List 1</button>
-            <button class="list-btn " data-list="Word List 2">Word List 2</button>
-            <button class="list-btn " data-list="Zayn's List">Zayn's List</button>
+        <div class="list-select-btn-container">
+            <button class="list-select-btn active" data-list="Word List 1">Word List 1</button>
+            <button class="list-select-btn " data-list="Word List 2">Word List 2</button>
+            <button class="list-select-btn " data-list="Zayn's List">Zayn's List</button>
         </div>
         
-        <div class="order-toggle-group">
-            <button class="order-btn" data-order="disordered">Disordered</button>
-            <button class="order-btn active" data-order="ordered">Ordered</button>
+        <div class="order-switch-group">
+            <button class="order-toggle-btn" data-order="disordered">Disordered</button>
+            <button class="order-toggle-btn active" data-order="ordered">Ordered</button>
         </div>
-        <div class="list-info">
-            <div id="list-stats">Word List 1 (82 words)</div>
+        <div class="sidebar-list-info">
+            <div id="sidebar-list-stats">Word List 1 (82 words)</div>
         </div>
     </div>
     
     <!-- 中央卡片容器 -->
-    <div class="card-container">
-        <div class="card">
-            <div class="card-top">
-                <div class="progress-container">
+    <div class="central-card-wrapper">
+        <div class="central-word-card">
+            <div class="card-top-bar">
+                <div class="progress-bar-wrapper">
                     <div class="progress-bar" id="progress-bar"></div>
                 </div>
-                <div class="word-counter" id="word-counter"></div>
+                <div class="word-index-counter" id="word-index-counter"></div>
             </div>
             
-            <div class="word" id="current-word"></div>
-            <div class="definition-wrapper">
-                <div class="definition" id="current-definition"></div>
+            <div class="current-word" id="current-word"></div>
+            <div class="definition-container">
+                <div class="current-definition" id="current-definition"></div>
             </div>
-            <div class="buttons">
-                <button id="prev-word">Previous</button>
-                <button id="show-definition">Display Definition</button>
-                <button id="next-word">Next</button>
+            <div class="card-btn-group">
+                <button id="btn-prev-word">Previous</button>
+                <button id="btn-show-definition">Display Definition</button>
+                <button id="btn-next-word">Next</button>
             </div>
         </div>
     </div>
     
     <!-- 底部状态显示 -->
-    <div class="bottom-status" id="bottom-status"></div>
+    <div class="page-bottom-status" id="page-bottom-status"></div>
 
     <script>
-        // 单词列表数据
+        // 单词列表数据 - 保持原逻辑
         const wordLists = {"Word List 1": [{"word": "bias", "definition": "n.偏见；v.使有偏见；"}, {"word": "analyze", "definition": "vt.分析，分解；"}, {"word": "burden", "definition": "n.担子，重担，负担；vt.给予负担或麻烦；"}, {"word": "urge", "definition": "vt.极力主张，强烈要求；n.刺激，冲动，迫切要求；"}, {"word": "urgent", "definition": "adj.紧急的，迫切的；"}, {"word": "athlete", "definition": "n.运动员；"}, {"word": "justice", "definition": "n.正义，公平，公正；"}, {"word": "justify", "definition": "v.证明...是正当的；"}, {"word": "behave", "definition": "vi.表现；v.表现得体；"}, {"word": "alter", "definition": "v.改变，更改；"}, {"word": "alternative", "definition": "adj.供选择的，选择性的，交替的；n.二中择一，供替代的选择；"}, {"word": "atmosphere", "definition": "n.大气(层)，空气，气氛，环境，大气压；"}, {"word": "hemisphere", "definition": "n.半球；"}, {"word": "catalog", "definition": "n.目录，系列；vt.为...编目录；"}, {"word": "category", "definition": "n.类别，范畴；"}, {"word": "bond", "definition": "n.结合（物），结合力，黏合（剂），联结，束缚，羁绊；"}, {"word": "faculty", "definition": "n.科，系，能力，全体教员，天赋；"}, {"word": "factor", "definition": "n.因素，要素，系数；"}, {"word": "factory", "definition": "n.工厂，制造厂；"}, {"word": "battery", "definition": "n.电池(组)，(器具等的)一组，一套，炮兵连；"}, {"word": "battle", "definition": "n.战斗；v.作战；"}, {"word": "cancer", "definition": "n.癌，癌症，肿瘤；"}, {"word": "alcohol", "definition": "n.酒精，酒；"}, {"word": "basis", "definition": "n.基础，原因，方式；"}, {"word": "database", "definition": "n.数据库，资料库；"}, {"word": "bacteria", "definition": "n.[pl]（[sing]bacterium）细菌；"}, {"word": "serve", "definition": "v.为...服务，供应；"}, {"word": "deserve", "definition": "v.应受，该得，值得；"}, {"word": "reserve", "definition": "n.储备，储存，自然保护区，预备队，缄默，[金融]储备金；vt.储备，保留，预约；vi.预订；"}, {"word": "pioneer", "definition": "n.先锋，拓荒者；vt.开辟，倡导，提倡；vi.作先驱；"}, {"word": "volunteer", "definition": "n.志愿者；vt.志愿；"}, {"word": "reform", "definition": "n.改革，改良，改正；vt.改革，革新，重新组成；vi.重组，改过；adj.改革的，改革教会的；"}, {"word": "former", "definition": "adj.从前的，以前的；"}, {"word": "formula", "definition": "n.公式，方案，配方；"}, {"word": "extreme", "definition": "adj.极端的，极度的，偏激的，尽头的；n.极端，末端，最大程度，极端的事物；"}, {"word": "external", "definition": "a.外部的，外面的，表面上的；"}, {"word": "superior", "definition": "a.较高的，上级的，有优势的，出众的；n.上级，长官；"}, {"word": "junior", "definition": "a.初级的；n.（中学或大学）三年级学生；"}, {"word": "disorder", "definition": "n.混乱，杂乱，骚乱，失调，疾病；"}, {"word": "display", "definition": "n.显示，陈列，炫耀，显示器；vt.显示，夸示；v.显示；"}, {"word": "dispute", "definition": "n.&v.辩论，争论，争吵，争端；"}, {"word": "distract", "definition": "vt.分散（注意力），使分心；"}, {"word": "distribute", "definition": "vt.分配，散布，分开，把...分类；"}, {"word": "discourage", "definition": "v.使气馁，使沮丧，阻碍；"}, {"word": "texture", "definition": "n.质地，纹理，结构，本质，实质；"}, {"word": "acupuncture", "definition": "n.针刺，针灸；"}, {"word": "architecture", "definition": "n.建筑学，建筑风格，建筑式样，架构；"}, {"word": "sculpture", "definition": "n.雕塑，雕刻，刻蚀；vt.雕塑，雕刻，刻蚀；vi.从事雕刻；"}, {"word": "structure", "definition": "n.结构，构造，建筑物；v.构造，建造；"}, {"word": "infrastructure", "definition": "n.基础结构，基础设施；"}, {"word": "leisure", "definition": "a.&n.空闲（的），闲暇（的），悠闲（的），安逸（的）；"}, {"word": "feature", "definition": "n.特征，容貌，特色，特写；v.以...为特色；"}, {"word": "decrease", "definition": "v.减少；"}, {"word": "deplete", "definition": "v.损耗，耗尽，使枯竭；"}, {"word": "detect", "definition": "v.发觉，发现，检定；"}, {"word": "decline", "definition": "v.拒绝，变弱，变小；n.消减；"}, {"word": "depend", "definition": "vi.依赖，依靠，取决于，相信，信赖；"}, {"word": "deposit", "definition": "v.存放，放下，使沉积；n.押金；"}, {"word": "desert", "definition": "v.放弃，离弃；n.沙漠；"}, {"word": "despite", "definition": "prep.不管，尽管，不论；"}, {"word": "detail", "definition": "n.细节，详情；vt.详述，细说；"}, {"word": "default", "definition": "vi.拖欠，不履行，不到场；n.违约，缺席，缺乏，系统默认值；vt.不履行，不参加（比赛等），对...处以缺席裁判；"}, {"word": "desire", "definition": "n.欲望，要求；v.想要，请求；"}, {"word": "declare", "definition": "vt.宣布，声明；"}, {"word": "define", "definition": "vt.定义，详细说明；"}, {"word": "delay", "definition": "n.耽搁，迟滞；v.使延误，使耽搁，延期，推迟；"}, {"word": "deliver", "definition": "v.传送，兑现；vt.发表，接生；"}, {"word": "demonstrate", "definition": "vt.证明，展示，论证；vi.示威；"}, {"word": "determine", "definition": "v.决心，决意，测定，查明；"}, {"word": "familiar", "definition": "a.熟悉的，通晓的，亲近的；n.熟客，密友；"}, {"word": "solar", "definition": "adj.太阳的，太阳系的，日光的；"}, {"word": "nuclear", "definition": "a.核的，核心的，原子能的，核动力的；"}, {"word": "scholar", "definition": "n.学者；"}, {"word": "seminar", "definition": "n.研讨会，研讨班；"}, {"word": "comment", "definition": "n.评论，解释，批评；v.评论；"}, {"word": "mental", "definition": "adj.精神的，智力的，心理上的；"}, {"word": "mention", "definition": "vt.提到，谈到，提及，论及，说起；n.提及，说起；"}, {"word": "remind", "definition": "vt.提醒，使想起；"}, {"word": "document", "definition": "n.文档；vt.记录；"}, {"word": "implement", "definition": "vt.实施，执行，实现，使生效；n.工具，器具，手段；"}, {"word": "monument", "definition": "n.纪念碑，纪念物，不朽的功业（著作）等；"}, {"word": "parliament", "definition": "n.议会，国会；"}], "Word List 2": [{"word": "rival", "definition": "n.竞争者，对手；v.竞争，对抗；a.竞争的；"}, {"word": "thrive", "definition": "vi.繁荣，兴旺，茁壮成长；"}, {"word": "cave", "definition": "n.洞穴；v.挖洞；"}, {"word": "barrel", "definition": "n.桶，一桶的量，大量，枪管，炮管，笔管，汽油桶；vi.快速移动；vt.把...装桶；"}, {"word": "barrier", "definition": "n.路障，障碍；"}, {"word": "circus", "definition": "n.马戏团，杂技团，马戏场，杂技场；"}, {"word": "satellite", "definition": "n.卫星，人造卫星；"}, {"word": "purchase", "definition": "v.买，购买；n.购买的物品；"}, {"word": "purpose", "definition": "n.目的，意向，决心，论题，意义；vt.意欲，企图；"}, {"word": "pursue", "definition": "v.追赶，追求，追踪；"}, {"word": "minimum", "definition": "n.最小值，最小化；adj.最小的；"}, {"word": "minister", "definition": "n.部长，大臣，牧师；vi.执行牧师职务，辅助或伺候某人；"}, {"word": "carbon", "definition": "n.[化]碳(元素符号C)，(一张)复写纸；"}, {"word": "cite", "definition": "vt.引用，传讯，想起，表彰；"}, {"word": "calorie", "definition": "n.卡路里，卡(热量单位)；"}, {"word": "clone", "definition": "n.无性繁殖，克隆，复制品；v.克隆；"}, {"word": "private", "definition": "adj.私人的，私立的；"}, {"word": "privilege", "definition": "n.特权，优待；vt.给与...特权，特免；"}, {"word": "civil", "definition": "adj.全民的，市民的，公民的，国民的，民间的，民事的，根据民法的，文职的，有礼貌的；"}, {"word": "philosophy", "definition": "n.哲学，人生观；"}, {"word": "sophisticated", "definition": "a.老于世故的，(仪器)精密的；"}, {"word": "coast", "definition": "vi.滑行，沿岸航行，不费力地取得成功；vt.沿...岸航行；n.海岸，滑坡；"}, {"word": "campaign", "definition": "n.战役，竞选活动；vi.参加活动；"}, {"word": "version", "definition": "n.版本，形式；"}, {"word": "reverse", "definition": "n.&v.颠倒，倒转，倒退，逆转；"}, {"word": "convert", "definition": "n.被改变宗教信仰的人；v.改变，转化；"}, {"word": "symptom", "definition": "n.症状，征候，征兆；"}, {"word": "syndrome", "definition": "n.综合病征，并存特性；"}, {"word": "prohibit", "definition": "vt.禁止，阻止；"}, {"word": "prompt", "definition": "v.促使，激起；a.立即的，及时的；"}, {"word": "profit", "definition": "n.利润，利益；v.有益；"}, {"word": "intelligent", "definition": "adj.聪明的，有才智的，智能的；"}, {"word": "interview", "definition": "v./n.接见，会见，采访，面试；"}, {"word": "entrepreneur", "definition": "n.企业家，创业人；"}, {"word": "enterprise", "definition": "n.公司，事业单位，进取心；"}, {"word": "interfere", "definition": "vi.干涉，妨碍，打扰；vt.冲突，介入；"}, {"word": "internal", "definition": "adj.内在的，国内的，体内的；"}, {"word": "cognitive", "definition": "adj.认知的，认识的；"}, {"word": "sensitive", "definition": "a.敏感的，体贴的，易生气的，棘手的；"}, {"word": "embrace", "definition": "vt.拥抱，信奉，皈依，包含；vi.拥抱；n.拥抱；"}, {"word": "enthusiasm", "definition": "n.热心，热情，热烈；"}, {"word": "enroll", "definition": "vt.登记，使加入，把...记入名册，使入伍；vi.参加，登记，注册，记入名册；"}, {"word": "envelope", "definition": "n.信封，封套，封皮；"}, {"word": "envelop", "definition": "vt.包封，遮盖，包围；"}, {"word": "ensure", "definition": "v.确保，担保；"}, {"word": "encourage", "definition": "vt.鼓励，支持，助长；"}, {"word": "endure", "definition": "v.忍耐，忍受，容忍；"}, {"word": "enhance", "definition": "v.提高，增加，改善；"}, {"word": "engage", "definition": "v.从事，参与，雇佣，引起···的注意；"}, {"word": "endorse", "definition": "vt.支持，赞同，代言；"}, {"word": "entail", "definition": "v.需要，牵涉，导致；"}, {"word": "merchant", "definition": "n.商人，批发商，店主；adj.商业的，商人的；"}, {"word": "tenant", "definition": "n.承租人，房客，佃户，居住者；vt.租借（常用于被动语态）；"}, {"word": "reluctant", "definition": "adj.不情愿的，勉强的，顽抗的；"}, {"word": "significant", "definition": "adj.有意义的，重大的，重要的；"}, {"word": "recognize", "definition": "v.认识，认出，承认；"}, {"word": "criticize", "definition": "v.批评，评论；"}, {"word": "vulnerable", "definition": "a.脆弱的，易受......伤害的；"}, {"word": "available", "definition": "adj.可用到的，可利用的，有用的，有空的，接受探访的；"}, {"word": "invisible", "definition": "a.隐形的，无形的；"}, {"word": "flexible", "definition": "a.易弯曲的，灵活的；"}, {"word": "responsible", "definition": "a.有责任的，应负责任的；"}, {"word": "setting", "definition": "n.背景，环境，装置；"}, {"word": "regarding", "definition": "prep.关于；"}, {"word": "motivate", "definition": "v.激发，刺激；"}, {"word": "incorporate", "definition": "vt.包含，吸收，体现，把...合并；vi.合并，混合，组成公司；adj.合并的，一体化的，组成公司的；"}, {"word": "illustrate", "definition": "v.为...作插图或图表，说明，阐明；"}, {"word": "navigate", "definition": "v.航海，导航，驾驶；"}, {"word": "indicate", "definition": "vt.指示，指出，象征，表明；"}, {"word": "investigate", "definition": "v.调查，研究；"}, {"word": "stimulate", "definition": "vt.刺激，激励，鼓舞；vi.起刺激作用；"}, {"word": "calculate", "definition": "vt.计算，估计，计划；"}, {"word": "celebrate", "definition": "vt.庆祝，祝贺，表扬，赞美；"}, {"word": "communicate", "definition": "v.交流，沟通，传达；"}, {"word": "dominate", "definition": "vt.控制，支配，占优势，在...中占主要地位；vi.占优势，处于支配地位；"}, {"word": "estimate", "definition": "v./n.估计，估价，评估；"}, {"word": "migrate", "definition": "v.迁移，移居；"}, {"word": "exaggerate", "definition": "v.夸张，夸大；"}, {"word": "ultimate", "definition": "adj.最终的，极限的，根本的；n.终极，根本，基本原则；"}, {"word": "immediate", "definition": "adj.立即的，直接的，最接近的；"}, {"word": "climate", "definition": "n.气候；"}, {"word": "undergraduate", "definition": "n.本科生；"}], "Zayn's List": [{"word": "accommodate", "definition": "vt.容纳，使适应；"}, {"word": "account", "definition": "v.解释，负责；"}, {"word": "affiliate", "definition": "vt.联系，从属；"}, {"word": "alleviate", "definition": "vt.减轻，缓解；"}, {"word": "ambiguous", "definition": "adj.含糊的，不明确的；"}, {"word": "benevolent", "definition": "adj.仁慈的，慈善的；"}, {"word": "bilateral", "definition": "adj.双边的；"}, {"word": "cognitive", "definition": "adj.认知的；"}, {"word": "cohere", "definition": "v.凝聚，团结；"}, {"word": "cohere", "definition": "v.连贯，一致；"}, {"word": "compatible", "definition": "adj.兼容的，和谐的；"}, {"word": "complement", "definition": "vt.补充；n.补充物；"}, {"word": "comprehensive", "definition": "adj.全面的，综合的；"}, {"word": "consensus", "definition": "n.共识，一致意见；"}, {"word": "contemporary", "definition": "adj.当代的；n.同代人；"}, {"word": "controversial", "definition": "adj.有争议的；"}, {"word": "degrade", "definition": "vt.退化，降级；"}, {"word": "deteriorate", "definition": "v.恶化，变坏；"}, {"word": "differentiate", "definition": "v.区分，区别；"}, {"word": "dilemma", "definition": "n.困境，进退两难；"}, {"word": "disseminate", "definition": "vt.传播，散布；"}, {"word": "dubious", "definition": "adj.怀疑的，可疑的；"}, {"word": "elaborate", "definition": "adj.复杂的；v.详细说明；"}, {"word": "empirical", "definition": "adj.经验主义的；"}, {"word": "encompass", "definition": "vt.包含，包括；"}, {"word": "enlighten", "definition": "vt.启蒙，启迪；"}, {"word": "exacerbate", "definition": "vt.使恶化，加剧；"}, {"word": "expend", "definition": "v.花费，消耗；"}, {"word": "exploit", "definition": "vt.开发，利用；"}, {"word": "facet", "definition": "n.方面，侧面；"}, {"word": "facilitate", "definition": "vt.促进，使容易；"}, {"word": "facilitate", "definition": "vt.促进，使容易；"}, {"word": "feasible", "definition": "adj.可行的，可能的；"}, {"word": "globalize", "definition": "vt.全球化；"}, {"word": "gregarious", "definition": "adj.社交的，群居的；"}, {"word": "heterogeneous", "definition": "adj.异质的，不同的；"}, {"word": "hierarchy", "definition": "n.等级制度，层级；"}, {"word": "holistic", "definition": "adj.整体的，全盘的；"}, {"word": "hypothesize", "definition": "v.假设，假定；"}, {"word": "imperative", "definition": "adj.必要的，紧急的；"}, {"word": "implement", "definition": "vt.实施，执行；"}, {"word": "implicate", "definition": "vt.暗示，牵连；"}, {"word": "infrastructure", "definition": "n.基础设施，基础结构；"}, {"word": "initiate", "definition": "v.开始，发起；"}, {"word": "integrate", "definition": "v.整合，使完整；"}, {"word": "intricate", "definition": "adj.复杂的，错综的；"}, {"word": "jeopardize", "definition": "vt.危害，危及；"}, {"word": "jurisdiction", "definition": "n.司法权，管辖权；"}, {"word": "justify", "definition": "vt.证明合理，辩护；"}, {"word": "juvenile", "definition": "adj.青少年的；n.青少年；"}, {"word": "legislate", "definition": "v.立法，制定法律；"}, {"word": "legitimate", "definition": "adj.合法的，合理的；"}, {"word": "lucrative", "definition": "adj.赚钱的，有利可图的；"}, {"word": "magnitude", "definition": "n.巨大，重要性；"}, {"word": "method", "definition": "n.方法，方式；"}, {"word": "mitigate", "definition": "vt.减轻，缓和；"}, {"word": "modernize", "definition": "vt.现代化；"}, {"word": "negligible", "definition": "adj.可忽略的，微不足道的；"}, {"word": "neutral", "definition": "adj.中立的，中性的；"}, {"word": "notify", "definition": "vt.通知，告知；"}, {"word": "notorious", "definition": "adj.臭名昭著的；"}, {"word": "obsolete", "definition": "adj.过时的，淘汰的；"}, {"word": "optimize", "definition": "vt.优化；"}, {"word": "orthodox", "definition": "adj.正统的，传统的；"}, {"word": "paradigm", "definition": "n.范例，模式；"}, {"word": "paradox", "definition": "n.悖论，矛盾；"}, {"word": "perspective", "definition": "n.视角，观点；"}, {"word": "pertinent", "definition": "adj.相关的，切题的；"}, {"word": "premise", "definition": "n.前提，假设；"}, {"word": "prerequisite", "definition": "n.先决条件，前提；"}, {"word": "prioritize", "definition": "vt.优先处理；"}, {"word": "profound", "definition": "adj.深刻的，深远的；"}, {"word": "provide", "definition": "v.供应，提供；"}, {"word": "qualify", "definition": "v.使合格，取得资格；"}, {"word": "quantify", "definition": "v.量化，确定数量；"}, {"word": "reconcile", "definition": "vt.和解，调和；"}, {"word": "redundant", "definition": "adj.多余的，冗余的；"}, {"word": "rehabilitate", "definition": "v.康复，修复；"}, {"word": "rigor", "definition": "n.严格，严密；"}, {"word": "scrutinize", "definition": "vt.仔细检查，监视；"}, {"word": "simultaneous", "definition": "adj.同时的，同步的；"}, {"word": "specify", "definition": "vt.指定，详细说明；"}, {"word": "standardize", "definition": "vt.标准化；"}, {"word": "subordinate", "definition": "adj.下级的；n.下属；"}, {"word": "subsidize", "definition": "vt.补贴，资助；"}, {"word": "substantial", "definition": "adj.大量的，实质的；"}, {"word": "sustain", "definition": "v.维持，支撑；"}, {"word": "tangible", "definition": "adj.有形的，实际的；"}, {"word": "tentative", "definition": "adj.试探性的，暂定的；"}, {"word": "terminate", "definition": "v.终止，结束；"}, {"word": "terminate", "definition": "v.终止，结束；"}, {"word": "transform", "definition": "vt.转变，改革；"}, {"word": "transparent", "definition": "adj.透明的，清晰的；"}, {"word": "ubiquitous", "definition": "adj.普遍存在的；"}, {"word": "unanimous", "definition": "adj.全体一致的；"}, {"word": "underlie", "definition": "vt.构成基础，位于下面；"}, {"word": "undermine", "definition": "vt.逐渐削弱，破坏；"}, {"word": "uniform", "definition": "adj.一致的，统一的；"}, {"word": "utilize", "definition": "vt.利用，使用；"}, {"word": "validate", "definition": "vt.验证，确认；"}, {"word": "verify", "definition": "vt.核实，证明；"}, {"word": "versatile", "definition": "adj.多才多艺的，多功能的；"}, {"word": "viable", "definition": "adj.可行的，能生存的；"}, {"word": "visualize", "definition": "vt.可视化，想象；"}, {"word": "vulnerable", "definition": "adj.易受伤害的，脆弱的；"}, {"word": "warrant", "definition": "vt.证明...合理；n.授权令；"}, {"word": "whereby", "definition": "adv.借以，由此；"}, {"word": "widespread", "definition": "adj.分布广泛的；"}, {"word": "zealous", "definition": "adj.热心的，热情的；"}]};
         const listKeys = Object.keys(wordLists);
         let activeList = listKeys[Math.floor(Math.random() * listKeys.length)];
@@ -654,68 +955,75 @@
         let currentIndex = 0;
         let isOrdered = true;
         
-        // DOM元素
-        const themeToggle = document.getElementById('theme-toggle');
-        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-        const listSelector = document.getElementById('list-selector');
+        // DOM元素 - 与修改后的ID同步
+        const themeSwitchBtn = document.getElementById('theme-switch-btn');
+        const mobileSidebarToggle = document.getElementById('mobile-sidebar-toggle');
+        const sidebarListSelector = document.getElementById('sidebar-list-selector');
         const html = document.documentElement;
-        const bottomStatus = document.getElementById('bottom-status');
+        const pageBottomStatus = document.getElementById('page-bottom-status');
+        
+        // 单词列表弹窗相关元素 - 与修改后的ID同步
+        const wordListModalBtn = document.getElementById('word-list-modal-btn');
+        const wordListModal = document.getElementById('word-list-modal');
+        const wordListModalContainer = document.getElementById('word-list-modal-container');
+        const wordListModalTitle = document.getElementById('word-list-modal-title');
+        const wordListModalStats = document.getElementById('word-list-modal-stats');
         
         console.log('Word lists loaded:', Object.keys(wordLists));
         console.log('Current words:', currentWords);
 
         // ========== 主题功能 ==========
-        // 初始化主题
+        // 初始化主题 - 逻辑不变，仅修改元素变量名
         function initTheme() {
             if (localStorage.getItem('theme') === 'dark' ||
                 (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 html.classList.add('dark');
-                themeToggle.textContent = 'Dark';
+                themeSwitchBtn.textContent = 'Dark';
             } else {
                 html.classList.remove('dark');
-                themeToggle.textContent = 'Light';
+                themeSwitchBtn.textContent = 'Light';
             }
         }
 
-        // 主题切换事件
-        themeToggle.addEventListener('click', () => {
+        // 主题切换事件 - 变量名同步
+        themeSwitchBtn.addEventListener('click', () => {
             const isDarkNow = html.classList.contains('dark');
             if (isDarkNow) {
                 html.classList.remove('dark');
                 localStorage.setItem('theme', 'light');
-                themeToggle.textContent = 'Light';
+                themeSwitchBtn.textContent = 'Light';
             } else {
                 html.classList.add('dark');
                 localStorage.setItem('theme', 'dark');
-                themeToggle.textContent = 'Dark';
+                themeSwitchBtn.textContent = 'Dark';
             }
         });
         
-        // ========== 移动端菜单功能 ==========
-        // 移动端菜单切换
-        mobileMenuToggle.addEventListener('click', () => {
-            listSelector.classList.toggle('mobile-open');
+        // ========== 移动端侧边栏功能 ==========
+        // 移动端侧边栏切换 - 变量名同步
+        mobileSidebarToggle.addEventListener('click', () => {
+            sidebarListSelector.classList.toggle('mobile-open');
         });
         
-        // 点击菜单外部关闭菜单
+        // 点击侧边栏外部关闭 - 变量名同步
         document.addEventListener('click', (e) => {
             if (window.innerWidth <= 1300 && 
-                !listSelector.contains(e.target) && 
-                !mobileMenuToggle.contains(e.target) &&
-                listSelector.classList.contains('mobile-open')) {
-                listSelector.classList.remove('mobile-open');
+                !sidebarListSelector.contains(e.target) && 
+                !mobileSidebarToggle.contains(e.target) &&
+                sidebarListSelector.classList.contains('mobile-open')) {
+                sidebarListSelector.classList.remove('mobile-open');
             }
         });
         
-        // 窗口大小变化时调整布局
+        // 窗口大小变化时调整布局 - 变量名同步
         window.addEventListener('resize', () => {
             if (window.innerWidth > 1300) {
-                listSelector.classList.remove('mobile-open');
+                sidebarListSelector.classList.remove('mobile-open');
             }
         });
         
         // ========== 进度条功能 ==========
-        // 更新进度条
+        // 更新进度条 - 元素ID同步
         function updateProgressBar() {
             const progressBar = document.getElementById('progress-bar');
             if (currentWords.length > 0) {
@@ -726,43 +1034,115 @@
         }
         
         // ========== 列表信息功能 ==========
-        // 更新列表统计信息
+        // 更新列表统计信息 - 元素ID同步
         function updateListStats() {
-            document.getElementById('list-stats').textContent = 
+            document.getElementById('sidebar-list-stats').textContent = 
                 `${activeList} (${currentWords.length} words)`;
         }
         
         // ========== 底部状态功能 ==========
-        // 更新底部状态显示
+        // 更新底部状态显示 - 变量名同步
         function updateBottomStatus() {
-            if (bottomStatus) {
-                bottomStatus.textContent = `${activeList} in ${isOrdered ? 'Order' : 'Disorder'}`;
+            if (pageBottomStatus) {
+                pageBottomStatus.textContent = `${activeList} in ${isOrdered ? 'Order' : 'Disorder'}`;
             }
         }
         
+        // ========== 单词列表弹窗功能 ==========
+        // 打开单词列表弹窗 - 变量名同步
+        function openWordTable() {
+            updateWordTable();
+            wordListModal.style.display = 'flex';
+        }
+        
+        // 关闭单词列表弹窗 - 变量名同步
+        function closeWordTable() {
+            wordListModal.style.display = 'none';
+        }
+        
+        // 更新单词列表弹窗内容 - 元素类名/ID同步
+        function updateWordTable() {
+            if (!wordListModalContainer) return;
+            
+            // 清空容器
+            wordListModalContainer.innerHTML = '';
+            
+            // 更新标题，分别显示列表名称和单词数量（左对齐和右对齐）
+            // 使用内联样式确保正确对齐，避免被其他CSS覆盖
+            wordListModalTitle.innerHTML = `
+                <div style="display: flex; justify-content: space-between; width: 100%; box-sizing: border-box;">
+                    <span>${activeList}</span>
+                    <span>${wordLists[activeList].length} words</span>
+                </div>
+            `;
+            // 确保标题容器本身有足够的宽度
+            wordListModalTitle.style.width = '100%';
+            wordListModalTitle.style.boxSizing = 'border-box';
+            
+            // 生成单词列表内容 - 始终使用order模式下的原始顺序
+            const words = [...wordLists[activeList]]; // 直接使用原始词表顺序，不进行排序
+            
+            // 保留底部分隔线但不显示内容
+            if (wordListModalStats) {
+                // 只需清空内容，样式由CSS统一控制
+                wordListModalStats.textContent = '';
+                // 确保元素仍然显示
+                wordListModalStats.style.display = 'block';
+            }
+            
+            words.forEach((wordObj, index) => {
+                const wordItem = document.createElement('div');
+                wordItem.className = 'word-list-modal-item'; // 类名同步
+                wordItem.innerHTML = `
+                    <div class="list-item-word">${wordObj.word}</div> <!-- 类名同步 -->
+                    <div class="list-item-definition">${wordObj.definition}</div> <!-- 类名同步 -->
+                `;
+                
+                // 点击单词项可以快速跳转到该单词 - 逻辑不变
+                wordItem.addEventListener('click', () => {
+                    if (isOrdered) {
+                        currentIndex = index;
+                    } else {
+                        // 在乱序模式下，找到该单词在currentWords中的实际位置
+                        const actualIndex = currentWords.findIndex(w => w.word === wordObj.word);
+                        if (actualIndex !== -1) {
+                            currentIndex = actualIndex;
+                        }
+                    }
+                    displayCurrentWord();
+                    closeWordTable();
+                });
+                
+                wordListModalContainer.appendChild(wordItem);
+            });
+            
+            // 更新统计信息
+            wordListModalStats.textContent = ''; // 清空内容，只保留装饰线
+        }
+        
         // ========== 单词列表功能 ==========
-        // 切换单词列表
+        // 切换单词列表 - 元素类名同步
         function switchList(listName) {
             console.log('Switching to list:', listName);
             activeList = listName;
             currentWords = wordLists[activeList] || [];
             currentIndex = 0;
             
-            // 更新按钮激活状态
-            document.querySelectorAll('.list-btn').forEach(btn => {
+            // 更新按钮激活状态 - 类名同步为.list-select-btn
+            document.querySelectorAll('.list-select-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.list === listName);
             });
             
-            // 更新显示
+            // 更新显示 - 逻辑不变
             updateListStats();
             updateProgressBar();
             updateBottomStatus();
             
-            // 加载单词
+            // 加载单词 - 逻辑不变
             if (currentWords.length === 0) {
                 document.getElementById('current-word').textContent = 'No words in this list';
                 document.getElementById('current-definition').innerHTML = '';
-                document.getElementById('word-counter').textContent = '';
+                document.getElementById('word-index-counter').textContent = '';
             } else {
                 currentWords = isOrdered ? [...currentWords] : [...currentWords].sort(() => Math.random() - 0.5);
                 displayCurrentWord();
@@ -771,10 +1151,11 @@
             updateButtonStates();
         }
         
-        // 切换顺序/随机模式
+        // 切换顺序/随机模式 - 元素类名同步
         function setOrder(orderType) {
             isOrdered = orderType === 'ordered';
-            document.querySelectorAll('.order-btn').forEach(btn => {
+            // 类名同步为.order-toggle-btn
+            document.querySelectorAll('.order-toggle-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.order === orderType);
             });
             
@@ -783,16 +1164,16 @@
         }
         
         // ========== 按钮状态管理 ==========
-        // 更新按钮状态
+        // 更新按钮状态 - 元素ID同步
         function updateButtonStates() {
-            const prevBtn = document.getElementById('prev-word');
-            const nextBtn = document.getElementById('next-word');
-            const showBtn = document.getElementById('show-definition');
+            const prevBtn = document.getElementById('btn-prev-word');
+            const nextBtn = document.getElementById('btn-next-word');
+            const showBtn = document.getElementById('btn-show-definition');
             const hasWords = currentWords.length > 0;
             const wordEl = document.getElementById('current-word');
             const isCompleted = wordEl && wordEl.textContent === 'Congratulations!';
             
-            // 处理上一个按钮
+            // 处理上一个按钮 - 逻辑不变
             if (prevBtn) {
                 prevBtn.disabled = currentIndex === 0 || !hasWords;
                 prevBtn.style.opacity = (currentIndex === 0 || !hasWords) ? '0.5' : '1';
@@ -819,13 +1200,13 @@
         }
         
         // ========== 单词显示功能 ==========
-        // 显示当前单词
+        // 显示当前单词 - 元素ID同步
         function displayCurrentWord() {
             const wordEl = document.getElementById('current-word');
             const defEl = document.getElementById('current-definition');
-            const counterEl = document.getElementById('word-counter');
-            const defWrapper = document.querySelector('.definition-wrapper');
-            const showBtn = document.getElementById('show-definition');
+            const counterEl = document.getElementById('word-index-counter');
+            const defWrapper = document.querySelector('.definition-container'); // 类名同步
+            const showBtn = document.getElementById('btn-show-definition');
             
             if (!wordEl || !defEl || !counterEl) {
                 console.error('Required DOM elements not found');
@@ -854,16 +1235,16 @@
             updateButtonStates();
         }
         
-        // 显示/隐藏定义（切换功能）
+        // 显示/隐藏定义（切换功能） - 逻辑不变
         function showDefinition() {
             const defEl = document.getElementById('current-definition');
-            const showBtn = document.getElementById('show-definition');
+            const showBtn = document.getElementById('btn-show-definition');
             const wordEl = document.getElementById('current-word');
             
             // 检查是否处于完成状态（显示Congratulations）
             const isCompleted = wordEl && wordEl.textContent === 'Congratulations!';
             if (isCompleted) {
-                // 如果是完成状态，不执行任何操作
+                // 如果是，不执行任何操作
                 return;
             }
             
@@ -877,7 +1258,7 @@
                 } else {
                     // 如果未显示，则渲染并显示释义内容
                     const defParts = currentWords[currentIndex].definition.split('；').filter(part => part.trim() !== '');
-                    const youdaoLink = `<a href="https://dict.youdao.com/result?word=${encodeURIComponent(currentWords[currentIndex].word)}&lang=en" target="_blank" style="color: var(--show-btn); text-decoration: underline;">有道词典</a>`;
+                    const youdaoLink = `<a href="https://dict.youdao.com/result?word=${encodeURIComponent(currentWords[currentIndex].word)}&lang=en" target="_blank" style="color: var(--btn-show-def-bg); text-decoration: underline;">有道词典</a>`;
                     defParts.push(youdaoLink);
                     defEl.innerHTML = defParts.join('；<br>');
                     defEl.classList.add('visible');
@@ -886,7 +1267,7 @@
             }
         }
         
-        // 上一个单词
+        // 上一个单词 - 元素ID同步
         function prevWord() {
             const wordEl = document.getElementById('current-word');
             if (!wordEl) return;
@@ -902,7 +1283,7 @@
             }
         }
         
-        // 下一个单词
+        // 下一个单词 - 逻辑不变
         function nextWord() {
             if (currentWords.length > 0) {
                 if (currentIndex < currentWords.length - 1) {
@@ -912,7 +1293,7 @@
                     // 已经是最后一个单词，显示完成信息
                     const wordEl = document.getElementById('current-word');
                     const defEl = document.getElementById('current-definition');
-                    const counterEl = document.getElementById('word-counter');
+                    const counterEl = document.getElementById('word-index-counter');
                     
                     if (wordEl && defEl && counterEl) {
                         wordEl.textContent = 'Congratulations!';
@@ -930,7 +1311,7 @@
         }
         
         // ========== 页面初始化 ==========
-        // 页面加载完成后初始化
+        // 页面加载完成后初始化 - 元素类名/ID同步
         document.addEventListener('DOMContentLoaded', () => {
             console.log('DOM loaded, initializing...');
             
@@ -942,41 +1323,56 @@
             updateProgressBar();
             updateButtonStates();
             
-            // 绑定列表切换事件
-            document.querySelectorAll('.list-btn').forEach(btn => {
+            // 绑定列表切换事件 - 类名同步为.list-select-btn
+            document.querySelectorAll('.list-select-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     console.log('List button clicked:', btn.dataset.list);
                     switchList(btn.dataset.list);
                 });
             });
             
-            // 绑定顺序切换事件
-            document.querySelectorAll('.order-btn').forEach(btn => {
+            // 绑定顺序切换事件 - 类名同步为.order-toggle-btn
+            document.querySelectorAll('.order-toggle-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     console.log('Order button clicked:', btn.dataset.order);
                     setOrder(btn.dataset.order);
                 });
             });
             
-            // 绑定功能按钮事件
-            const prevBtn = document.getElementById('prev-word');
-            const showBtn = document.getElementById('show-definition');
-            const nextBtn = document.getElementById('next-word');
+            // 绑定功能按钮事件 - 元素ID同步
+            const prevBtn = document.getElementById('btn-prev-word');
+            const showBtn = document.getElementById('btn-show-definition');
+            const nextBtn = document.getElementById('btn-next-word');
             
             if (prevBtn) prevBtn.addEventListener('click', prevWord);
             if (showBtn) showBtn.addEventListener('click', showDefinition);
             if (nextBtn) nextBtn.addEventListener('click', nextWord);
             
-            // 绑定键盘事件
+            // 绑定单词列表弹窗按钮事件 - 变量名同步
+            if (wordListModalBtn) {
+                wordListModalBtn.addEventListener('click', openWordTable);
+            }
+            
+            // 已移除关闭按钮，仅保留点击外部关闭功能
+            
+            // 点击模态框外部关闭单词列表弹窗 - 变量名同步
+            wordListModal.addEventListener('click', (e) => {
+                if (e.target === wordListModal) {
+                    closeWordTable();
+                }
+            });
+            
+            // 绑定键盘事件 - 逻辑不变
             document.addEventListener('keydown', (e) => {
                 if (e.key === ' ' || e.key === 'Enter') {
                     e.preventDefault();
                     showDefinition();
                 } else if (e.key === 'ArrowLeft') prevWord();
                 else if (e.key === 'ArrowRight') nextWord();
+                else if (e.key === 'Escape') closeWordTable();
             });
             
-            // 触摸手势支持
+            // 触摸手势支持 - 逻辑不变
             let touchStartX = 0;
             document.addEventListener('touchstart', (e) => {
                 touchStartX = e.changedTouches[0].screenX;
@@ -995,18 +1391,18 @@
                 }
             });
             
-            // 更新左侧按钮激活状态以匹配随机选择的词表
-            document.querySelectorAll('.list-btn').forEach(btn => {
+            // 更新左侧按钮激活状态以匹配随机选择的词表 - 类名同步
+            document.querySelectorAll('.list-select-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.list === activeList);
             });
             
-            // 默认乱序设置
+            // 默认乱序设置 - 逻辑不变
             isOrdered = false; // 设为乱序模式
-            document.querySelector('.order-btn[data-order="disordered"]').classList.add('active'); // 激活乱序按钮
-            document.querySelector('.order-btn[data-order="ordered"]').classList.remove('active'); // 取消顺序按钮激活
+            document.querySelector('.order-toggle-btn[data-order="disordered"]').classList.add('active'); // 激活乱序按钮
+            document.querySelector('.order-toggle-btn[data-order="ordered"]').classList.remove('active'); // 取消顺序按钮激活
             currentWords = [...wordLists[activeList]].sort(() => Math.random() - 0.5); // 加载乱序单词
             
-            // 初始化显示
+            // 初始化显示 - 逻辑不变
             if (currentWords.length > 0) {
                 displayCurrentWord();
             } else {
@@ -1016,7 +1412,7 @@
                 }
             }
             
-            // 初始化底部状态显示
+            // 初始化底部状态显示 - 逻辑不变
             updateBottomStatus();
             console.log('Initialization complete');
         });
