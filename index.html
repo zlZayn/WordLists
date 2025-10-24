@@ -770,11 +770,13 @@
             
             if (currentWords.length > 0 && currentIndex < currentWords.length) {
                 wordEl.textContent = currentWords[currentIndex].word;
-                // 生成有道词典链接文本（与释义用“；”分隔，格式统一）
-const youdaoLinkText = `<a href="https://dict.youdao.com/w/${currentWords[currentIndex].word}/" target="_blank" style="color: var(--next-btn); text-decoration: underline;">有道词典</a>`;
-// 拼接“原释义 + ； + 有道词典链接”，并保持原换行格式
-const unifiedDef = `${currentWords[currentIndex].definition}；${youdaoLinkText}`.replace(/；/g, '；<br>');
-defEl.innerHTML = unifiedDef;
+                // 1. 去掉原释义末尾的“；”，避免重复
+const cleanDef = currentWords[currentIndex].definition.replace(/；$/, '');
+// 2. 生成有道词典链接（作为“释义项”）
+const youdaoItem = `<a href="https://dict.youdao.com/w/${currentWords[currentIndex].word}/" target="_blank" style="color: var(--next-btn); text-decoration: underline;">有道词典</a>`;
+// 3. 拼接“清理后释义 + ； + 链接项”，再按原格式换行
+const correctDef = `${cleanDef}；${youdaoItem}`.replace(/；/g, '；<br>');
+defEl.innerHTML = correctDef;
                 counterEl.textContent = `Word ${currentIndex + 1} / ${currentWords.length}`;
             } else {
                 wordEl.textContent = 'No words available';
