@@ -166,7 +166,7 @@
         /* 3. 按钮样式（全局复用组件，集中管理） */
         /* 3.1 按钮通用样式 */
         .btn-common {
-            padding: 10px 10px;
+            padding: 10px 15px;
             font-size: 16px;
             border: none;
             border-radius: 15px;
@@ -894,7 +894,7 @@
             if (localStorage.getItem('theme') === 'dark' ||
                 (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 html.classList.add('dark');
-                themeSwitchBtn.textContent = 'Dark';
+                themeSwitchBtn.textContent = 'Dark Mode';
             } else {
                 html.classList.remove('dark');
                 themeSwitchBtn.textContent = 'Light Mode';
