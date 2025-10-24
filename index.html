@@ -308,7 +308,7 @@
             color: var(--text-secondary);
             font-weight: 500;
             min-width: 120px;
-            text-align: right;
+            text-align: center;
         }
         
         .word {
@@ -786,12 +786,35 @@
         // 更新按钮状态
         function updateButtonStates() {
             const prevBtn = document.getElementById('prev-word');
+            const nextBtn = document.getElementById('next-word');
+            const showBtn = document.getElementById('show-definition');
             const hasWords = currentWords.length > 0;
+            const wordEl = document.getElementById('current-word');
+            const isCompleted = wordEl && wordEl.textContent === 'Congratulations!';
             
+            // 处理上一个按钮
             if (prevBtn) {
                 prevBtn.disabled = currentIndex === 0 || !hasWords;
                 prevBtn.style.opacity = (currentIndex === 0 || !hasWords) ? '0.5' : '1';
                 prevBtn.style.cursor = (currentIndex === 0 || !hasWords) ? 'not-allowed' : 'pointer';
+            }
+            
+            // 处理下一个按钮 - 仅在完成状态时禁用
+            if (nextBtn) {
+                nextBtn.disabled = isCompleted;
+                nextBtn.style.opacity = nextBtn.disabled ? '0.5' : '1';
+                nextBtn.style.cursor = nextBtn.disabled ? 'not-allowed' : 'pointer';
+            }
+            
+            // 处理显示定义按钮 - 在完成状态时禁用
+            if (showBtn) {
+                showBtn.disabled = isCompleted;
+                showBtn.style.opacity = isCompleted ? '0.5' : '1';
+                showBtn.style.cursor = isCompleted ? 'not-allowed' : 'pointer';
+                // 非完成状态时保持文本为'Display Definition'
+                if (!isCompleted) {
+                    showBtn.textContent = 'Display Definition';
+                }
             }
         }
         
@@ -802,6 +825,7 @@
             const defEl = document.getElementById('current-definition');
             const counterEl = document.getElementById('word-counter');
             const defWrapper = document.querySelector('.definition-wrapper');
+            const showBtn = document.getElementById('show-definition');
             
             if (!wordEl || !defEl || !counterEl) {
                 console.error('Required DOM elements not found');
@@ -812,6 +836,11 @@
             defEl.classList.remove('visible');
             defEl.innerHTML = ''; // 清空内容，防止误触
             if (defWrapper) defWrapper.scrollTop = 0;
+            
+            // 重置显示定义按钮文本
+            if (showBtn) {
+                showBtn.textContent = 'Display Definition';
+            }
             
             if (currentWords.length > 0 && currentIndex < currentWords.length) {
                 wordEl.textContent = currentWords[currentIndex].word;
@@ -878,7 +907,7 @@
                     
                     if (wordEl && defEl && counterEl) {
                         wordEl.textContent = 'Congratulations!';
-                        defEl.innerHTML = 'You have completed learning all the words in this word list!';
+                        defEl.innerHTML = `You have completed ${activeList}!`;
                         defEl.classList.add('visible');
                         counterEl.textContent = `100%`;
                         
