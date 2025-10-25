@@ -7,7 +7,15 @@
     <style>
         /* ============================== 1. 基础定义 ============================== */
         /* 1.1 变量定义（优先定义，供后续使用） */
+        /* 1.1 浅色模式变量 - 基础主题样式 */
         :root {
+            /* 主题色 */
+            --theme-pink: #ff99cc;
+            --theme-blue: #42a5f5;
+            
+            /* 特殊用途变量 */
+            /* 模态框相关（与暗模式保持结构一致） */
+            
             /* 背景色 */
             --page-bg: #fef8ed;
             --card-bg: white;
@@ -20,16 +28,12 @@
             
             /* 进度条 */
             --progress-bar-bg: #f1f1f1;
-            --progress-bar-fill: #ff99cc;
             
             /* 功能按钮 */
             --btn-prev-bg: #cccccc;
             --btn-prev-hover: #999999;
-            --btn-show-def-bg: #ff99cc;
             --btn-show-def-hover: #ff6699;
-            --btn-next-bg: #42a5f5;
             --btn-next-hover: #1876F3;
-            --btn-active-bg: #ff99cc;
             
             /* 侧边栏按钮 */
             --order-toggle-disordered: var(--btn-prev-bg);
@@ -38,24 +42,32 @@
             --list-select-btn-active-bg: var(--card-bg);
             --list-select-btn-active-text: #333;
             
-            /* 其他 */
+            /* 界面元素 */
             --border-color: #ccc;
             --shadow-primary: 0 6px 12px rgba(0,0,0,0.05);
             --shadow-secondary: 0 4px 8px rgba(0,0,0,0.02);
+            
+            /* 滚动条 */
             --scrollbar-track: #f1f1f1;
             --scrollbar-thumb: #bbb;
             --scrollbar-thumb-hover: #999;
             
-            /* 新增：过渡动画变量（鼠标点击位置、扩散半径） */
+            /* 过渡动画变量（鼠标点击位置、扩散半径） */
             --x: 0px;
             --y: 0px;
             --r: 0px;
         }
 
-        /* 1.2 深色模式变量（紧跟基础变量，保持统一性） */
+        /* 1.2 深色模式变量 */
         :root.dark {
-            /* 为单词列表模态框添加暗模式纯白背景 */
+            /* 主题色 */
+            --theme-pink: #d64187;
+            --theme-blue: #2563eb;
+            
+            /* 特殊用途变量 */
+            /* 模态框相关 */
             --modal-dark-bg: rgba(255, 255, 255, 0.1);
+            
             /* 背景色 */
             --page-bg: #2d2b3a;
             --card-bg: #3a384c;
@@ -68,15 +80,11 @@
             
             /* 进度条 */
             --progress-bar-bg: #4a485c;
-            --progress-bar-fill: #d64187;
-            --btn-active-bg: #d64187;
             
             /* 功能按钮 */
             --btn-prev-bg: #555;
             --btn-prev-hover: #777;
-            --btn-show-def-bg: #d64187;
             --btn-show-def-hover: #b8326d;
-            --btn-next-bg: #2563eb;
             --btn-next-hover: #1d4ed8;
             
             /* 侧边栏按钮 */
@@ -86,10 +94,12 @@
             --list-select-btn-active-bg: #3a384c;
             --list-select-btn-active-text: #fff;
             
-            /* 其他 */
+            /* 界面元素 */
             --border-color: #555;
             --shadow-primary: 0 6px 12px rgba(255, 255, 255, 0.05);
             --shadow-secondary: 0 4px 8px rgba(255, 255, 255, 0.02);
+            
+            /* 滚动条 */
             --scrollbar-track: #4a485c;
             --scrollbar-thumb: #666;
             --scrollbar-thumb-hover: #888;
@@ -140,7 +150,45 @@
             color: var(--text-primary);
         }
 
-        /* 2.2 页面状态显示（顶部+底部） */
+        /* 2.2 搜索框样式 */
+        .search-input {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            border: 3px solid var(--theme-pink);
+            border-radius: 15px;
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 16px;
+            padding: 8px 15px;
+            outline: none;
+            width: 200px;
+            font-weight: bold;
+            text-align: center;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            display: none; /* 默认隐藏 */
+            margin: 0;
+        }
+        .search-input::placeholder {
+            color: var(--text-primary);
+            font-style: italic;
+        }
+        .search-match-char {
+            color: var(--theme-pink);
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+        
+        /* 未匹配卡片背景样式 */
+        .search-no-match {
+            background-color: var(--page-bg) !important;
+            transition: background-color 0.2s ease;
+        }
+        
+        /* 2.3 页面状态显示（顶部+底部） */
         .page-top-status {
             position: fixed;
             top: 2px;
@@ -190,7 +238,7 @@
             transform: scale(1.05);
         }
         .btn-common.active {
-            background-color: var(--btn-active-bg);
+            background-color: var(--theme-pink);
             transition: background-color 0.2s ease;
         }
 
@@ -285,13 +333,13 @@
             background-color: var(--btn-prev-hover);
         }
         #btn-show-definition {
-            background-color: var(--btn-show-def-bg);
+            background-color: var(--theme-pink);
         }
         #btn-show-definition:hover {
             background-color: var(--btn-show-def-hover);
         }
         #btn-next-word {
-            background-color: var(--btn-next-bg);
+            background-color: var(--theme-blue);
         }
         #btn-next-word:hover {
             background-color: var(--btn-next-hover);
@@ -400,7 +448,7 @@
         }
         .progress-bar {
             height: 100%;
-            background-color: var(--progress-bar-fill);
+            background-color: var(--theme-pink);
             width: 0%;
             transition: width 0.2s ease;
         }
@@ -513,7 +561,7 @@
         }
         body.focus-mode .progress-bar {
             height: 100%;
-            background-color: var(--progress-bar-fill);
+            background-color: var(--theme-pink);
             width: 0%;
             transition: width 0.2s ease;
         }
@@ -670,6 +718,7 @@
             transform: translateY(-2px);
             box-shadow: var(--shadow-primary);
         }
+
         .list-item-word {
             font-size: 20px;
             font-weight: bold;
@@ -702,7 +751,7 @@
             border-radius: 6px;
         }
         .sidebar-list-selector::-webkit-scrollbar-thumb {
-            background: var(--progress-bar-fill);
+            background: var(--theme-pink);
             border-radius: 6px;
         }
         .sidebar-list-selector::-webkit-scrollbar-thumb:hover {
@@ -718,7 +767,7 @@
             border-radius: 6px;
         }
         .word-list-modal-container::-webkit-scrollbar-thumb {
-            background: var(--progress-bar-fill);
+            background: var(--theme-pink);
             border-radius: 6px;
         }
         .word-list-modal-container::-webkit-scrollbar-thumb:hover {
@@ -734,7 +783,7 @@
             border-radius: 6px;
         }
         .definition-container::-webkit-scrollbar-thumb {
-            background: var(--progress-bar-fill);
+            background: var(--theme-pink);
             border-radius: 6px;
         }
         .definition-container::-webkit-scrollbar-thumb:hover {
@@ -1015,8 +1064,8 @@
     </style>
 </head>
 <body>
-    <!-- 移动端侧边栏按钮 -->
-    <button class="btn-common btn-floating mobile-sidebar-toggle" id="mobile-sidebar-toggle">Select</button>
+        <!-- 移动端侧边栏按钮 -->
+        <button class="btn-common btn-floating mobile-sidebar-toggle" id="mobile-sidebar-toggle">Select</button>
     
     <!-- 主题切换按钮 -->
     <button class="btn-common btn-floating theme-switch-btn" id="theme-switch-btn">Dark</button>
@@ -1032,7 +1081,7 @@
         <div class="word-list-modal-content">
             <div class="word-list-modal-header">
                 <h2 class="word-list-modal-title" id="word-list-modal-title">
-                    <div style="display: flex; justify-content: space-between; width: 100%; box-sizing: border-box;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; box-sizing: border-box;">
                         <span>${activeList}</span>
                         <span>${wordLists[activeList].length} words</span>
                     </div>
@@ -1046,6 +1095,9 @@
             </div>
         </div>
     </div>
+    
+    <!-- 全局搜索框 -->
+    <input type="text" class="search-input" id="search-input" placeholder="">
     
     <!-- 顶部状态显示 -->
     <div class="page-top-status" id="page-top-status"></div>
@@ -1107,6 +1159,7 @@
         const mobileSidebarToggle = document.getElementById('mobile-sidebar-toggle');
         const sidebarListSelector = document.getElementById('sidebar-list-selector');
         const focusModeBtn = document.getElementById('focus-mode-btn');
+        const searchInput = document.getElementById('search-input');
         const html = document.documentElement;
         const pageBottomStatus = document.getElementById('page-bottom-status');
         const pageTopStatus = document.getElementById('page-top-status');
@@ -1127,10 +1180,10 @@
             if (localStorage.getItem('theme') === 'dark' ||
                 (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 html.classList.add('dark');
-                themeSwitchBtn.textContent = 'Dark Mode';
+                themeSwitchBtn.textContent = 'Dark';
             } else {
                 html.classList.remove('dark');
-                themeSwitchBtn.textContent = 'Light Mode';
+                themeSwitchBtn.textContent = 'Light ';
             }
         }
 
@@ -1162,11 +1215,11 @@
                     if (isDarkNow) {
                         html.classList.remove('dark');
                         localStorage.setItem('theme', 'light');
-                        themeSwitchBtn.textContent = 'Light Mode';
+                        themeSwitchBtn.textContent = 'Light ';
                     } else {
                         html.classList.add('dark');
                         localStorage.setItem('theme', 'dark');
-                        themeSwitchBtn.textContent = 'Dark Mode';
+                        themeSwitchBtn.textContent = 'Dark';
                     }
                 });
             } else {
@@ -1175,16 +1228,109 @@
                 if (isDarkNow) {
                     html.classList.remove('dark');
                     localStorage.setItem('theme', 'light');
-                    themeSwitchBtn.textContent = 'Light Mode';
+                    themeSwitchBtn.textContent = 'Light ';
                 } else {
                     html.classList.add('dark');
                     localStorage.setItem('theme', 'dark');
-                    themeSwitchBtn.textContent = 'Dark Mode';
+                    themeSwitchBtn.textContent = 'Dark';
                 }
             }
         });
         
-        // ========== 移动端侧边栏功能 ==========
+        // ========== 搜索功能 ==========
+        // 实现单词和释义的搜索，对匹配字符进行高亮（粉色字体带过渡动画），未匹配卡片使用页面背景色
+        function handleSearch() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const wordItems = document.querySelectorAll('.word-list-modal-item');
+            
+            // 清除所有之前的高亮
+            wordItems.forEach(item => {
+                // 移除未匹配标记
+                item.classList.remove('search-no-match');
+                
+                // 恢复原始文本
+                const wordElement = item.querySelector('.list-item-word');
+                const definitionElement = item.querySelector('.list-item-definition');
+                
+                // 移除之前添加的高亮标记
+                wordElement.innerHTML = wordElement.textContent;
+                definitionElement.innerHTML = definitionElement.textContent;
+            });
+            
+            // 搜索框不为空时进行搜索
+            if (searchTerm) {
+                wordItems.forEach(item => {
+                    const wordElement = item.querySelector('.list-item-word');
+                    const definitionElement = item.querySelector('.list-item-definition');
+                    const wordText = wordElement.textContent;
+                    const definitionText = definitionElement.textContent;
+                    const hasMatch = wordText.toLowerCase().indexOf(searchTerm) !== -1 || 
+                                   definitionText.toLowerCase().indexOf(searchTerm) !== -1;
+                    
+                    // 如果没有匹配项，添加未匹配样式
+                    if (!hasMatch) {
+                        item.classList.add('search-no-match');
+                    } else {
+                        // 高亮单词中的匹配字符
+                        if (wordText.toLowerCase().indexOf(searchTerm) !== -1) {
+                            wordElement.innerHTML = highlightText(wordText, searchTerm);
+                        }
+                        
+                        // 高亮释义中的匹配字符
+                        if (definitionText.toLowerCase().indexOf(searchTerm) !== -1) {
+                            definitionElement.innerHTML = highlightText(definitionText, searchTerm);
+                        }
+                    }
+                });
+            }
+        }
+        
+        // 辅助函数：高亮匹配的文本字符
+        function highlightText(text, searchTerm) {
+            var result = '';
+            var lowerText = text.toLowerCase();
+            var startIndex = 0;
+            var index;
+            
+            while ((index = lowerText.indexOf(searchTerm, startIndex)) !== -1) {
+                // 添加匹配前的文本
+                result += text.substring(startIndex, index);
+                // 添加高亮的匹配文本
+                result += '<span class="search-match-char">' + text.substring(index, index + searchTerm.length) + '</span>';
+                // 更新起始位置
+                startIndex = index + searchTerm.length;
+            }
+            
+            // 添加剩余文本
+            result += text.substring(startIndex);
+            return result;
+        }
+        
+        // 监听搜索框输入事件
+        if (searchInput) {
+            // 延迟执行搜索，提高性能
+            searchInput.addEventListener('input', () => {
+                clearTimeout(window.searchTimeout);
+                window.searchTimeout = setTimeout(handleSearch, 200);
+            });
+            
+            // 初始化占位符
+            searchInput.placeholder = 'Search...';
+            
+            // 点击事件：清除占位符
+            searchInput.addEventListener('click', () => {
+                searchInput.placeholder = '';
+            });
+            
+            // 失焦事件：输入框为空时恢复占位符
+            searchInput.addEventListener('blur', () => {
+                if (!searchInput.value.trim()) {
+                    searchInput.placeholder = 'Search...';
+                }
+            });
+        }
+        
+        // 移动端侧边栏功能 ==========
         // 移动端侧边栏切换 - 变量名同步
         mobileSidebarToggle.addEventListener('click', () => {
             sidebarListSelector.classList.toggle('mobile-open');
@@ -1274,11 +1420,23 @@
         function openWordTable() {
             updateWordTable();
             wordListModal.classList.add('active');
+            
+            // 显示搜索框
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                searchInput.style.display = 'block';
+            }
         }
         
         // 关闭单词列表弹窗 - 变量名同步
         function closeWordTable() {
             wordListModal.classList.remove('active');
+            
+            // 隐藏搜索框
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                searchInput.style.display = 'none';
+            }
         }
         
         // 更新单词列表弹窗内容 - 元素类名/ID同步
@@ -1296,6 +1454,13 @@
                     <span>${wordLists[activeList].length} words</span>
                 </div>
             `;
+            
+            // 同步搜索框状态
+            const searchInput = document.getElementById('search-input');
+            if (searchInput && searchInput.value.trim()) {
+                // 如果搜索框有内容，立即执行搜索
+                setTimeout(handleSearch, 0);
+            }
             // 确保标题容器本身有足够的宽度
             wordListModalTitle.style.width = '100%';
             wordListModalTitle.style.boxSizing = 'border-box';
@@ -1313,7 +1478,8 @@
             
             words.forEach((wordObj, index) => {
                 const wordItem = document.createElement('div');
-                wordItem.className = 'word-list-modal-item'; // 类名同步
+                let className = 'word-list-modal-item';
+                wordItem.className = className; // 类名同步
                 wordItem.innerHTML = `
                     <div class="list-item-word">${wordObj.word}</div> <!-- 类名同步 -->
                     <div class="list-item-definition">${wordObj.definition}</div> <!-- 类名同步 -->
@@ -1479,7 +1645,7 @@
                 } else {
                     // 如果未显示，则渲染并显示释义内容
                     const defParts = currentWords[currentIndex].definition.split('；').filter(part => part.trim() !== '');
-                    const youdaoLink = `<a href="https://dict.youdao.com/result?word=${encodeURIComponent(currentWords[currentIndex].word)}&lang=en" target="_blank" style="color: var(--btn-show-def-bg); text-decoration: underline;">有道词典</a>`;
+                    const youdaoLink = `<a href="https://dict.youdao.com/result?word=${encodeURIComponent(currentWords[currentIndex].word)}&lang=en" target="_blank" style="color: var(--theme-pink); text-decoration: underline;">有道词典</a>`;
                     defParts.push(youdaoLink);
                     defEl.innerHTML = defParts.join('；<br>');
                     defEl.classList.add('visible');
@@ -1571,7 +1737,11 @@
             
             // 绑定单词列表弹窗按钮事件 - 变量名同步
             if (wordListModalBtn) {
-                wordListModalBtn.addEventListener('click', openWordTable);
+                wordListModalBtn.addEventListener('click', () => {
+                    openWordTable();
+                    // 打开弹窗后立即应用当前搜索条件
+                    handleSearch();
+                });
             }
             
             // 已移除关闭按钮，仅保留点击外部关闭功能
@@ -1642,6 +1812,7 @@
             
             // 初始化底部状态显示 - 逻辑不变
             updateBottomStatus();
+
             console.log('Initialization complete');
         });
     </script>
