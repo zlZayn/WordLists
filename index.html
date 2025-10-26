@@ -6,7 +6,6 @@
     <title>单词列表 | Word Lists</title>
     <style>
         /* ============================== 1. 基础定义 ============================== */
-        /* 1.1 变量定义（优先定义，供后续使用） */
         /* 1.1 浅色模式变量 - 基础主题样式 */
         :root {
             /* 主题色 */
@@ -27,7 +26,7 @@
             --btn-text: #000;
             
             /* 进度条 */
-            --progress-bar-bg: #f1f1f1;
+            --progress-fill-bg: #f1f1f1;
             
             /* 功能按钮 */
             --btn-prev-bg: #cccccc;
@@ -79,7 +78,7 @@
             --btn-text: white;
             
             /* 进度条 */
-            --progress-bar-bg: #4a485c;
+            --progress-fill-bg: #4a485c;
             
             /* 功能按钮 */
             --btn-prev-bg: #555;
@@ -151,7 +150,7 @@
         }
 
         /* 2.2 搜索框样式 */
-        .search-input {
+        .search {
             position: fixed;
             top: 20px;
             left: 50%;
@@ -172,7 +171,7 @@
             display: none; /* 默认隐藏 */
             margin: 0;
         }
-        .search-input::placeholder {
+        .search::placeholder {
             color: var(--text-primary);
             font-style: italic;
         }
@@ -182,6 +181,33 @@
             transition: all 0.2s ease;
         }
         
+        /* 发音和链接悬浮效果 */
+        .word-definition-link {
+            display: inline-block;
+            transition: transform 0.2s ease;
+        }
+        .word-definition-link:hover {
+            transform: translateY(-5px);
+        }
+        /* 有道词典链接样式 */
+        .word-youdao-link {
+            color: var(--theme-pink);
+            text-decoration: underline;
+        }
+        /* 发音按钮链接样式 */
+        .word-pronunciation-btn {
+            color: var(--theme-pink);
+            text-decoration: none;
+        }
+        /* 发音按钮容器样式 */
+        .word-pronunciation-container {
+            margin-left: 8px;
+        }
+        
+        .def-pronunciation-link:hover {
+            transform: translateY(-5px);
+        }
+        
         /* 未匹配卡片背景样式 */
         .search-no-match {
             background-color: var(--page-bg) !important;
@@ -189,7 +215,7 @@
         }
         
         /* 2.3 页面状态显示（顶部+底部） */
-        .page-top-status {
+        .status-top {
             position: fixed;
             top: 2px;
             left: 50%;
@@ -201,7 +227,7 @@
             padding: 0;
         }
 
-        .page-bottom-status {
+        .status-bottom {
             position: fixed;
             bottom: 2px;
             left: 50%;
@@ -216,7 +242,7 @@
 
         /* ============================== 3. 组件样式：按钮 ============================== */
         /* 3.1 按钮通用样式（所有按钮基础） */
-        .btn-common {
+        .btn {
             padding: clamp(8px, 2vw, 8px) clamp(12px, 3vw, 18px);
             font-size: 16px;
             border: none;
@@ -234,48 +260,48 @@
             line-height: 1.2;
             margin: 0;
         }
-        .btn-common:hover {
+        .btn:hover {
             transform: scale(1.05);
         }
-        .btn-common.active {
+        .btn.active {
             background-color: var(--theme-pink);
             transition: background-color 0.2s ease;
         }
 
         /* 3.2 浮动按钮（顶部/底部悬浮：侧边栏开关、主题切换等） */
-        .btn-floating {
+        .btn-float {
             position: fixed;
             width: 120px;
             z-index: 20;
         }
-        .btn-floating:hover {
+        .btn-float:hover {
             box-shadow: var(--shadow-primary);
         }
         /* 浮动按钮位置差异化 */
-        .mobile-sidebar-toggle {
+        .btn-menu {
             top: 20px;
             left: 20px;
             display: none; /* 初始隐藏，响应式时显示 */
         }
-        .theme-switch-btn {
+        .btn-theme {
             top: 20px;
             right: 20px;
         }
-        .word-list-modal-btn {
+        .btn-list {
             bottom: 20px;
             right: 20px;
         }
-        .focus-mode-btn {
+        .btn-focus {
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
         }
-        .focus-mode-btn:hover {
+        .btn-focus:hover {
             transform: translateX(-50%) scale(1.05);
         }
 
         /* 3.3 侧边栏按钮（列表选择、顺序切换） */
-        .btn-sidebar {
+        .btn-nav {
             width: 100%;
             box-sizing: border-box;
             min-height: 60px;
@@ -292,22 +318,22 @@
             color: var(--list-select-btn-active-text);
             box-shadow: var(--shadow-primary);
         }
-        .order-toggle-btn:hover, .order-toggle-btn.active {
+        .btn-order:hover, .btn-order.active {
             font-size: 22px;
             color: var(--text-primary);
             box-shadow: var(--shadow-primary);
         }
-        .order-toggle-btn[data-order="disordered"]:hover,
-        .order-toggle-btn[data-order="disordered"].active {
+        .btn-order[data-order="disordered"]:hover,
+        .btn-order[data-order="disordered"].active {
             background-color: var(--order-toggle-disordered-hover);
         }
-        .order-toggle-btn[data-order="ordered"]:hover,
-        .order-toggle-btn[data-order="ordered"].active {
+        .btn-order[data-order="ordered"]:hover,
+        .btn-order[data-order="ordered"].active {
             background-color: var(--order-toggle-ordered);
         }
 
         /* 3.4 中央卡片功能按钮（上一个、显示释义、下一个） */
-        .card-btn-group {
+        .card-actions {
             display: flex;
             justify-content: center;
             gap: 10px;
@@ -317,7 +343,7 @@
             transition: all 0.2s ease;
         }
         /* 功能按钮尺寸控制 */
-        .card-btn-group .btn-common {
+        .card-actions .btn {
             padding: 15px 30px;
             font-size: clamp(16px, 2vw, 20px);
             min-width: 100px;
@@ -326,28 +352,28 @@
             transition: all 0.2s ease;
         }
         /* 功能按钮背景色差异化 */
-        #btn-prev-word {
+        #btn-prev {
             background-color: var(--btn-prev-bg);
         }
-        #btn-prev-word:hover {
+        #btn-prev:hover {
             background-color: var(--btn-prev-hover);
         }
-        #btn-show-definition {
+        #btn-toggle {
             background-color: var(--theme-pink);
         }
-        #btn-show-definition:hover {
+        #btn-toggle:hover {
             background-color: var(--btn-show-def-hover);
         }
-        #btn-next-word {
+        #btn-next {
             background-color: var(--theme-blue);
         }
-        #btn-next-word:hover {
+        #btn-next:hover {
             background-color: var(--btn-next-hover);
         }
 
         /* ============================== 4. 组件样式：页面布局 ============================== */
         /* 4.1 左侧侧边栏 */
-        .sidebar-list-selector {
+        .sidebar {
             width: 250px;
             background-color: var(--sidebar-list-bg);
             padding: 20px 0;
@@ -365,28 +391,28 @@
             overflow-y: auto;
         }
         /* 侧边栏内部子元素 */
-        .sidebar-list-selector h3,
-        .list-select-btn-container,
-        .order-switch-group,
-        .sidebar-list-info {
+        .sidebar h3,
+        .list-buttons,
+        .order-buttons,
+        .sidebar-footer {
             padding-left: 20px;
             padding-right: 20px;
         }
-        .sidebar-list-selector h3 {
+        .sidebar h3 {
             color: var(--text-primary);
             margin-bottom: 10px;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 10px;
             text-align: center;
         }
-        .list-select-btn-container {
+        .list-buttons {
             width: 100%;
             display: flex;
             flex-direction: column;
             gap: 15px;
             box-sizing: border-box;
         }
-        .order-switch-group {
+        .order-buttons {
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -394,7 +420,7 @@
             margin-top: auto;
             box-sizing: border-box;
         }
-        .sidebar-list-info {
+        .sidebar-footer {
             margin-top: 15px;
             padding-top: 15px;
             border-top: 1px solid var(--border-color);
@@ -405,7 +431,7 @@
         }
 
         /* 4.2 中央单词卡片 */
-        .central-card-wrapper {
+        .main {
             position: fixed;
             top: 80px;
             bottom: 80px;
@@ -417,7 +443,7 @@
             z-index: 5;
             transition: all 0.2s ease;
         }
-        .central-word-card {
+        .card {
             width: 100%;
             max-width: 800px;
             height: auto;
@@ -432,27 +458,27 @@
             text-align: center;
         }
         /* 卡片顶部（进度条+索引） */
-        .card-top-bar {
+        .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
             gap: 20px;
         }
-        .progress-bar-wrapper {
+        .progress {
             flex-grow: 1;
             height: 10px;
-            background-color: var(--progress-bar-bg);
+            background-color: var(--progress-fill-bg);
             border-radius: 6px;
             overflow: hidden;
         }
-        .progress-bar {
+        .progress-fill {
             height: 100%;
             background-color: var(--theme-pink);
             width: 0%;
             transition: width 0.2s ease;
         }
-        .word-index-counter {
+        .counter {
             font-size: 18px;
             color: var(--text-secondary);
             font-weight: 500;
@@ -460,7 +486,7 @@
             text-align: center;
         }
         /* 卡片内容（单词+释义） */
-        .current-word {
+        .word {
             font-size: clamp(3rem, 6vw, 4.5rem);
             font-weight: bold;
             color: var(--text-primary);
@@ -473,7 +499,7 @@
             align-items: center;
             flex: 1;
         }
-        .definition-container {
+        .definition-area {
             flex-grow: 1;
             overflow-y: auto;
             margin: 0;
@@ -482,7 +508,7 @@
             display: flex;
             justify-content: center;
         }
-        .current-definition {
+        .definition {
             font-size: clamp(1.3rem, 3.5vw, 1.8rem);
             color: var(--text-secondary);
             line-height: 1.3;
@@ -491,17 +517,17 @@
             text-align: center;
             width: 100%;
         }
-        .current-definition.visible {
+        .definition.visible {
             opacity: 1;
             transition: opacity 0.2s ease;
         }
 
         /* ============================== 5. 组件样式：专注模式 ============================== */
         /* 专注模式：隐藏非核心元素 */
-        body.focus-mode .sidebar-list-selector, 
-        body.focus-mode .mobile-sidebar-toggle, 
-        body.focus-mode .theme-switch-btn, 
-        body.focus-mode .word-list-modal-btn {
+        body.focus-mode .sidebar, 
+        body.focus-mode .btn-menu, 
+        body.focus-mode .btn-theme, 
+        body.focus-mode .btn-list {
             opacity: 0;
             pointer-events: none;
         }
@@ -517,7 +543,7 @@
             z-index: 5;
         }
         /* 专注模式：中央卡片全屏化 */
-        body.focus-mode .central-card-wrapper {
+        body.focus-mode .main {
             position: fixed;
             top: 40px;
             bottom: 40px;
@@ -528,7 +554,7 @@
             align-items: center;
             z-index: 15;
         }
-        body.focus-mode .central-word-card {
+        body.focus-mode .card {
             width: 100%;
             max-width: 100%;
             height: 100%;
@@ -544,7 +570,7 @@
             text-align: center;
         }
         /* 专注模式：进度条调整 */
-        body.focus-mode .card-top-bar {
+        body.focus-mode .card-header {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -552,20 +578,20 @@
             gap: 10px;
             width: 100%;
         }
-        body.focus-mode .progress-bar-wrapper {
+        body.focus-mode .progress {
             width: 100%;
             height: 10px;
-            background-color: var(--progress-bar-bg);
+            background-color: var(--progress-fill-bg);
             border-radius: 6px;
             overflow: hidden;
         }
-        body.focus-mode .progress-bar {
+        body.focus-mode .progress-fill {
             height: 100%;
             background-color: var(--theme-pink);
             width: 0%;
             transition: width 0.2s ease;
         }
-        body.focus-mode .word-index-counter {
+        body.focus-mode .counter {
             font-size: 18px;
             color: var(--text-secondary);
             font-weight: 500;
@@ -573,7 +599,7 @@
             width: 100%;
         }
         /* 专注模式：单词和释义居中放大 */
-        body.focus-mode .current-word {
+        body.focus-mode .word {
             margin: 0;
             padding: 0;
             display: flex;
@@ -583,7 +609,7 @@
             transition: all 0.2s ease;
             font-size: clamp(3rem, 7vw, 5rem);
         }
-        body.focus-mode .definition-container {
+        body.focus-mode .definition-area {
             display: flex;
             justify-content: center;
             align-items: center;
@@ -591,14 +617,14 @@
             margin: 0;
             transition: all 0.2s ease;
         }
-        body.focus-mode .current-definition {
+        body.focus-mode .definition {
             text-align: center;
             width: 100%;
             transition: all 0.2s ease;
             font-size: clamp(1.5rem, 5vw, 2.2rem);
         }
         /* 专注模式：按钮组布局调整（向两边分布） */
-        body.focus-mode .card-btn-group {
+        body.focus-mode .card-actions {
             justify-content: space-between;
             width: 100%;
             max-width: 1200px;
@@ -608,7 +634,7 @@
             transition: all 0.2s ease;
         }
         /* 专注模式：功能按钮放大 */
-        body.focus-mode .card-btn-group .btn-common {
+        body.focus-mode .card-actions .btn {
             padding: 20px 30px;
             font-size: 24px;
             min-width: 200px;
@@ -619,15 +645,15 @@
             text-align: center;
         }
         /* 专注模式：元素过渡效果补充 */
-        .definition-container {
+        .definition-area {
             transition: all 0.2s ease;
         }
-        .current-definition {
+        .definition {
             transition: all 0.2s ease;
         }
 
         /* ============================== 6. 特殊模块：单词列表弹窗 ============================== */
-        .word-list-modal {
+        .modal {
             display: flex;
             position: fixed;
             top: 0;
@@ -644,16 +670,16 @@
             visibility: hidden;
             transition: opacity 0.2s ease, visibility 0.2s ease;
         }
-        .word-list-modal.active {
+        .modal.active {
             opacity: 1;
             visibility: visible;
         }
         /* 暗模式下弹窗背景 */
-        :root.dark .word-list-modal {
+        :root.dark .modal {
             background-color: var(--modal-dark-bg);
         }
         /* 弹窗内容区 */
-        .word-list-modal-content {
+        .modal-content {
             background-color: var(--page-bg);
             border-radius: 15px;
             box-shadow: var(--shadow-primary);
@@ -666,7 +692,7 @@
             display: flex;
             flex-direction: column;
         }
-        .word-list-modal-header {
+        .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -674,7 +700,7 @@
             padding-bottom: 1.5%;
             border-bottom: 1px solid var(--border-color);
         }
-        .word-list-modal-title {
+        .modal-title {
             text-align: left;
             font-size: 28px;
             font-weight: bold;
@@ -698,7 +724,7 @@
             color: var(--text-primary);
         }
         /* 弹窗单词列表区 */
-        .word-list-modal-container {
+        .modal-body {
             flex: 1;
             overflow-y: auto;
             padding: 1%;
@@ -707,31 +733,31 @@
             gap: 1.5%;
             align-content: start;
         }
-        .word-list-modal-item {
+        .modal-item {
             background-color: var(--card-bg);
             border-radius: 15px;
             padding: 1.5%;
             transition: all 0.2s ease;
             cursor: pointer;
         }
-        .word-list-modal-item:hover {
+        .modal-item:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-primary);
         }
 
-        .list-item-word {
+        .item-word {
             font-size: 20px;
             font-weight: bold;
             color: var(--text-primary);
             margin-bottom: 8px;
         }
-        .list-item-definition {
+        .item-definition {
             font-size: 14px;
             color: var(--text-secondary);
             line-height: 1.4;
         }
         /* 弹窗底部分割线 */
-        .word-list-modal-stats {
+        .modal-footer {
             margin-top: 1.5%;
             padding-top: 1.5%;
             border-top: 1px solid var(--border-color);
@@ -743,50 +769,50 @@
 
         /* ============================== 7. 通用样式：滚动条 ============================== */
         /* 7.1 侧边栏滚动条 */
-        .sidebar-list-selector::-webkit-scrollbar {
+        .sidebar::-webkit-scrollbar {
             width: 12px;
         }
-        .sidebar-list-selector::-webkit-scrollbar-track {
-            background: var(--progress-bar-bg);
+        .sidebar::-webkit-scrollbar-track {
+            background: var(--progress-fill-bg);
             border-radius: 6px;
         }
-        .sidebar-list-selector::-webkit-scrollbar-thumb {
+        .sidebar::-webkit-scrollbar-thumb {
             background: var(--theme-pink);
             border-radius: 6px;
         }
-        .sidebar-list-selector::-webkit-scrollbar-thumb:hover {
+        .sidebar::-webkit-scrollbar-thumb:hover {
             background: var(--btn-show-def-hover);
         }
 
         /* 7.2 单词弹窗滚动条 */
-        .word-list-modal-container::-webkit-scrollbar {
+        .modal-body::-webkit-scrollbar {
             width: 12px;
         }
-        .word-list-modal-container::-webkit-scrollbar-track {
-            background: var(--progress-bar-bg);
+        .modal-body::-webkit-scrollbar-track {
+            background: var(--progress-fill-bg);
             border-radius: 6px;
         }
-        .word-list-modal-container::-webkit-scrollbar-thumb {
+        .modal-body::-webkit-scrollbar-thumb {
             background: var(--theme-pink);
             border-radius: 6px;
         }
-        .word-list-modal-container::-webkit-scrollbar-thumb:hover {
+        .modal-body::-webkit-scrollbar-thumb:hover {
             background: var(--btn-show-def-hover);
         }
 
         /* 7.3 释义容器滚动条 */
-        .definition-container::-webkit-scrollbar {
+        .definition-area::-webkit-scrollbar {
             width: 12px;
         }
-        .definition-container::-webkit-scrollbar-track {
-            background: var(--progress-bar-bg);
+        .definition-area::-webkit-scrollbar-track {
+            background: var(--progress-fill-bg);
             border-radius: 6px;
         }
-        .definition-container::-webkit-scrollbar-thumb {
+        .definition-area::-webkit-scrollbar-thumb {
             background: var(--theme-pink);
             border-radius: 6px;
         }
-        .definition-container::-webkit-scrollbar-thumb:hover {
+        .definition-area::-webkit-scrollbar-thumb:hover {
             background: var(--btn-show-def-hover);
         }
 
@@ -794,77 +820,77 @@
         /* 8.1 大屏适配（1300px以下） */
         @media (max-width: 1300px) {
             /* 移动端侧边栏显示 */
-            .mobile-sidebar-toggle {
+            .btn-menu {
                 display: flex;
             }
             /* 侧边栏默认隐藏，点击按钮展开 */
-            .sidebar-list-selector {
+            .sidebar {
                 transform: translateX(-100%);
                 width: 280px;
                 padding: 20px 0;
                 transition: transform 0.2s ease;
             }
-            .sidebar-list-selector.mobile-open {
+            .sidebar.mobile-open {
                 transform: translateX(0);
             }
             /* 中央卡片调整 */
-            .central-card-wrapper {
+            .main {
                 top: 70px;
                 bottom: 70px;
                 left: 20px;
                 right: 20px;
             }
-            .sidebar-list-selector.mobile-open ~ .central-card-wrapper {
+            .sidebar.mobile-open ~ .main {
                 left: 300px;
             }
             /* 专注模式在移动端保持相同边距 */
-            body.focus-mode .central-card-wrapper {
+            body.focus-mode .main {
                 top: 40px;
                 bottom: 40px;
                 left: 5px;
                 right: 5px;
             }
-            .central-word-card {
+            .card {
                 padding: 25px 20px;
                 min-height: 400px;
                 margin: 20px 0;
             }
-            .card-top-bar {
+            .card-header {
                 flex-direction: column;
                 gap: 15px;
                 margin-bottom: 20px;
             }
-            .progress-bar-wrapper {
+            .progress {
                 width: 100%;
             }
-            .word-index-counter {
+            .counter {
                 text-align: center;
                 min-width: auto;
             }
-            .current-word {
+            .word {
                 font-size: 40px;
                 margin: 0;
                 padding: 0;
             }
-            .current-definition {
+            .definition {
                 font-size: 22px;
             }
-            .definition-container {
+            .definition-area {
                 min-height: 150px;
                 margin: 5px 0 15px;
             }
-            .card-btn-group {
+            .card-actions {
                 gap: 15px;
             }
             /* 弹窗调整 */
-            .word-list-modal-content {
+            .modal-content {
                 width: 80%;
                 max-width: 1200px;
                 padding: 30px;
                 top: 10%;
                 bottom: 10%;
             }
-            .word-list-modal-container {
+            .modal-body {
                 padding: 15px 20px;
                 grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             }
@@ -873,50 +899,50 @@
         /* 8.2 中屏适配（1024px以下） */
         @media (max-width: 1024px) {
             /* 中央卡片调整 */
-            .central-word-card {
+            .card {
                 padding: 30px 20px;
                 min-height: 450px;
             }
-            .current-word {
+            .word {
                 font-size: 50px;
                 margin: 0;
                 padding: 0;
             }
-            .current-definition {
+            .definition {
                 font-size: 24px;
             }
             /* 按钮调整 */
-            .card-btn-group .btn-common {
+            .card-actions .btn {
                 padding: 12px 25px;
                 font-size: 18px;
                 min-width: 100px;
             }
-            .btn-floating {
+            .btn-float {
                 width: 100px;
                 padding: 8px 15px;
                 font-size: 14px;
             }
             /* 弹窗调整 */
-            .word-list-modal-content {
+            .modal-content {
                 width: 85%;
                 max-width: none;
                 padding: 25px;
                 top: 10%;
                 bottom: 10%;
             }
-            .word-list-modal-container {
+            .modal-body {
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
                 gap: 12px;
             }
             /* 弹窗二次调整（与上方1024px规则合并） */
-            .word-list-modal-content {
+            .modal-content {
                 width: 85%;
                 max-width: none;
                 padding: 1.8%;
                 top: 80px;
                 bottom: 60px;
             }
-            .word-list-modal-container {
+            .modal-body {
                 padding: 1%;
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
                 gap: 1.2%;
@@ -926,55 +952,55 @@
         /* 8.3 小屏适配（840px以下） */
         @media (max-width: 840px) {
             /* 专注模式在更小屏幕保持相同边距 */
-            body.focus-mode .central-card-wrapper {
+            body.focus-mode .main {
                 top: 40px;
                 bottom: 40px;
                 left: 5px;
                 right: 5px;
             }
             /* 专注模式下响应式字体调整 - 比普通模式更大 */
-            body.focus-mode .current-word {
+            body.focus-mode .word {
                 font-size: clamp(3rem, 8vw, 4.5rem);
                 margin: 0;
                 padding: 0;
             }
-            body.focus-mode .current-definition {
+            body.focus-mode .definition {
                 font-size: clamp(1.3rem, 4.5vw, 1.8rem);
             }
             /* 专注模式按钮调整 */
-            body.focus-mode .card-btn-group .btn-common {
+            body.focus-mode .card-actions .btn {
                 font-size: clamp(12px, 2.5vw, 16px);
                 padding: 15px 20px;
                 min-width: 80px;
             }
             
             /* 普通模式按钮字体调整 */
-            .card-btn-group .btn-common {
+            .card-actions .btn {
                 font-size: clamp(12px, 2vw, 18px);
                 padding: 12px 20px;
                 min-width: 80px;
             }
             
             /* 弹窗调整 */
-            .word-list-modal-content {
+            .modal-content {
                 width: 90%;
                 padding: 1.5%;
                 top: 80px;
                 bottom: 60px;
             }
-            .word-list-modal-container {
+            .modal-body {
                 padding: 1%;
                 grid-template-columns: 1fr;
                 gap: 1.2%;
             }
             
             /* 调整字体大小适配平板 */
-            .current-word {
+            .word {
                 font-size: clamp(2.5rem, 6vw, 3.5rem);
                 margin: 0;
                 padding: 0;
             }
-            .current-definition {
+            .definition {
                 font-size: clamp(1.3rem, 4vw, 1.8rem);
             }
         }
@@ -982,65 +1008,65 @@
         /* 8.4 超小屏适配（480px以下） */
         @media (max-width: 480px) {
             /* 专注模式在最小屏幕保持相同边距 */
-            body.focus-mode .central-card-wrapper {
+            body.focus-mode .main {
                 top: 40px;
                 bottom: 40px;
                 left: 5px;
                 right: 5px;
             }
             /* 专注模式下响应式字体调整 - 比普通模式更大 */
-            body.focus-mode .current-word {
+            body.focus-mode .word {
                 font-size: clamp(2.5rem, 7vw, 3.5rem);
                 margin: 0;
                 padding: 0;
             }
-            body.focus-mode .current-definition {
+            body.focus-mode .definition {
                 font-size: clamp(1.3rem, 4.5vw, 1.8rem);
             }
             /* 中央卡片调整 */
-            .current-word {
+            .word {
                 font-size: clamp(2rem, 6vw, 3rem);
                 margin: 0;
                 padding: 0;
             }
-            .current-definition {
+            .definition {
                 font-size: clamp(1.2rem, 4vw, 1.6rem);
             }
-            .central-word-card {
+            .card {
                 padding: 20px 15px;
                 min-height: 350px;
             }
             /* 按钮调整 */
-            .card-btn-group .btn-common {
+            .card-actions .btn {
                 padding: 12px 15px;
                 font-size: clamp(10px, 3vw, 14px);
                 min-width: 70px;
                 max-width: none;
             }
-            .card-btn-group {
+            .card-actions {
                 gap: 10px;
             }
-            .word-index-counter {
+            .counter {
                 font-size: 14px;
             }
             /* 浮动按钮调整 */
-            .btn-floating {
+            .btn-float {
                 width: 80px;
                 padding: 6px 12px;
                 font-size: 10px;
             }
             /* 弹窗调整 */
-            .word-list-modal-content {
+            .modal-content {
                 width: 95%;
                 padding: 1.2%;
                 top: 80px;
                 bottom: 60px;
             }
-            .word-list-modal-container {
+            .modal-body {
                 padding: 1%;
                 gap: 1.2%;
             }
-            .word-list-modal-title {
+            .modal-title {
                 font-size: 20px;
             }
         }
@@ -1048,16 +1074,16 @@
         /* ============================== 9. 适配样式：触摸设备 ============================== */
         @media (hover: none) and (pointer: coarse) {
             /* 按钮最小高度适配触摸 */
-            .btn-common {
+            .btn {
                 min-height: 44px;
             }
             /* 移除触摸设备上的hover效果 */
-            .list-select-btn:hover, .order-toggle-btn:hover {
+            .list-select-btn:hover, .btn-order:hover {
                 font-size: inherit;
                 background-color: var(--sidebar-list-bg);
                 color: var(--text-secondary);
             }
-            .list-select-btn.active:hover, .order-toggle-btn.active:hover {
+            .list-select-btn.active:hover, .btn-order.active:hover {
                 font-size: 22px;
             }
         }
@@ -1065,85 +1091,85 @@
 </head>
 <body>
         <!-- 移动端侧边栏按钮 -->
-        <button class="btn-common btn-floating mobile-sidebar-toggle" id="mobile-sidebar-toggle">Select</button>
+        <button class="btn btn-float btn-menu" id="btn-menu">Select</button>
     
     <!-- 主题切换按钮 -->
-    <button class="btn-common btn-floating theme-switch-btn" id="theme-switch-btn">Dark</button>
+    <button class="btn btn-float btn-theme" id="btn-theme">Dark</button>
     
     <!-- 专注模式按钮 -->
-    <button class="btn-common btn-floating focus-mode-btn" id="focus-mode-btn">Focus</button>
+    <button class="btn btn-float btn-focus" id="btn-focus">Focus</button>
     
     <!-- 单词列表弹窗按钮 -->
-    <button class="btn-common btn-floating word-list-modal-btn" id="word-list-modal-btn">Word List</button>
+    <button class="btn btn-float btn-list" id="btn-list">Word List</button>
     
     <!-- 单词列表弹窗 -->
-    <div class="word-list-modal" id="word-list-modal">
-        <div class="word-list-modal-content">
-            <div class="word-list-modal-header">
-                <h2 class="word-list-modal-title" id="word-list-modal-title">
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modal-title">
                     <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; box-sizing: border-box;">
                         <span>${activeList}</span>
                         <span>${wordLists[activeList].length} words</span>
                     </div>
                 </h2>
             </div>
-            <div class="word-list-modal-container" id="word-list-modal-container">
+            <div class="modal-body" id="modal-body">
                 <!-- 单词列表内容将通过JavaScript动态生成 -->
             </div>
-            <div class="word-list-modal-stats" id="word-list-modal-stats">
+            <div class="modal-footer" id="modal-footer">
                 <!-- 统计信息将通过JavaScript动态生成 -->
             </div>
         </div>
     </div>
     
     <!-- 全局搜索框 -->
-    <input type="text" class="search-input" id="search-input" placeholder="">
+    <input type="text" class="search" id="search" placeholder="">
     
     <!-- 顶部状态显示 -->
-    <div class="page-top-status" id="page-top-status"></div>
+    <div class="status-top" id="status-top"></div>
     
     <!-- 左侧列表选择器 -->
-    <div class="sidebar-list-selector" id="sidebar-list-selector">
+    <div class="sidebar" id="sidebar">
         <h3>Select Word List</h3>
-        <div class="list-select-btn-container">
-            <button class="btn-common btn-sidebar list-select-btn active" data-list="Word List 1">Word List 1</button>
-            <button class="btn-common btn-sidebar list-select-btn " data-list="Word List 2">Word List 2</button>
-            <button class="btn-common btn-sidebar list-select-btn " data-list="Zayn's List">Zayn's List</button>
+        <div class="list-buttons">
+            <button class="btn btn-nav list-select-btn active" data-list="Word List 1">Word List 1</button>
+            <button class="btn btn-nav list-select-btn " data-list="Word List 2">Word List 2</button>
+            <button class="btn btn-nav list-select-btn " data-list="Zayn's List">Zayn's List</button>
         </div>
         
-        <div class="order-switch-group">
-            <button class="btn-common btn-sidebar order-toggle-btn" data-order="disordered">Disordered</button>
-            <button class="btn-common btn-sidebar order-toggle-btn active" data-order="ordered">Ordered</button>
+        <div class="order-buttons">
+            <button class="btn btn-nav btn-order" data-order="disordered">Disordered</button>
+            <button class="btn btn-nav btn-order active" data-order="ordered">Ordered</button>
         </div>
-        <div class="sidebar-list-info">
-            <div id="sidebar-list-stats">Word List 1 (82 words)</div>
+        <div class="sidebar-footer">
+            <div id="sidebar-info">Word List 1 (82 words)</div>
         </div>
     </div>
     
     <!-- 中央卡片容器 -->
-    <div class="central-card-wrapper">
-        <div class="central-word-card">
-            <div class="card-top-bar">
-                <div class="progress-bar-wrapper">
-                    <div class="progress-bar" id="progress-bar"></div>
+    <div class="main">
+        <div class="card">
+            <div class="card-header">
+                <div class="progress">
+                    <div class="progress-fill" id="progress-fill"></div>
                 </div>
-                <div class="word-index-counter" id="word-index-counter"></div>
+                <div class="counter" id="counter"></div>
             </div>
             
-            <div class="current-word" id="current-word"></div>
-            <div class="definition-container">
-                <div class="current-definition" id="current-definition"></div>
+            <div class="word" id="word"></div>
+            <div class="definition-area">
+                <div class="definition" id="definition"></div>
             </div>
-            <div class="card-btn-group">
-                <button class="btn-common" id="btn-prev-word">Previous</button>
-                <button class="btn-common" id="btn-show-definition">Display</button>
-                <button class="btn-common" id="btn-next-word">Next</button>
+            <div class="card-actions">
+                <button class="btn" id="btn-prev">Previous</button>
+                <button class="btn" id="btn-toggle">Display</button>
+                <button class="btn" id="btn-next">Next</button>
             </div>
         </div>
     </div>
     
     <!-- 底部状态显示 -->
-    <div class="page-bottom-status" id="page-bottom-status"></div>
+    <div class="status-bottom" id="status-bottom"></div>
 
     <script>
         // 单词列表数据 - 保持原逻辑
@@ -1155,21 +1181,21 @@
         let isOrdered = true;
         
         // DOM元素 - 与修改后的ID同步
-        const themeSwitchBtn = document.getElementById('theme-switch-btn');
-        const mobileSidebarToggle = document.getElementById('mobile-sidebar-toggle');
-        const sidebarListSelector = document.getElementById('sidebar-list-selector');
-        const focusModeBtn = document.getElementById('focus-mode-btn');
-        const searchInput = document.getElementById('search-input');
+        const themeSwitchBtn = document.getElementById('btn-theme');
+        const mobileSidebarToggle = document.getElementById('btn-menu');
+        const sidebarListSelector = document.getElementById('sidebar');
+        const focusModeBtn = document.getElementById('btn-focus');
+        const searchInput = document.getElementById('search');
         const html = document.documentElement;
-        const pageBottomStatus = document.getElementById('page-bottom-status');
-        const pageTopStatus = document.getElementById('page-top-status');
+        const pageBottomStatus = document.getElementById('status-bottom');
+        const pageTopStatus = document.getElementById('status-top');
         
         // 单词列表弹窗相关元素 - 与修改后的ID同步
-        const wordListModalBtn = document.getElementById('word-list-modal-btn');
-        const wordListModal = document.getElementById('word-list-modal');
-        const wordListModalContainer = document.getElementById('word-list-modal-container');
-        const wordListModalTitle = document.getElementById('word-list-modal-title');
-        const wordListModalStats = document.getElementById('word-list-modal-stats');
+        const wordListModalBtn = document.getElementById('btn-list');
+        const wordListModal = document.getElementById('modal');
+        const wordListModalContainer = document.getElementById('modal-body');
+        const wordListModalTitle = document.getElementById('modal-title');
+        const wordListModalStats = document.getElementById('modal-footer');
         
         console.log('Word lists loaded:', Object.keys(wordLists));
         console.log('Current words:', currentWords);
@@ -1240,8 +1266,11 @@
         // ========== 搜索功能 ==========
         // 实现单词和释义的搜索，对匹配字符进行高亮（粉色字体带过渡动画），未匹配卡片使用页面背景色
         function handleSearch() {
+            // 确保searchInput存在
+            if (!searchInput) return;
+            
             const searchTerm = searchInput.value.toLowerCase();
-            const wordItems = document.querySelectorAll('.word-list-modal-item');
+            const wordItems = document.querySelectorAll('.modal-item');
             
             // 清除所有之前的高亮
             wordItems.forEach(item => {
@@ -1249,8 +1278,8 @@
                 item.classList.remove('search-no-match');
                 
                 // 恢复原始文本
-                const wordElement = item.querySelector('.list-item-word');
-                const definitionElement = item.querySelector('.list-item-definition');
+                const wordElement = item.querySelector('.item-word');
+                const definitionElement = item.querySelector('.item-definition');
                 
                 // 移除之前添加的高亮标记
                 wordElement.innerHTML = wordElement.textContent;
@@ -1260,8 +1289,8 @@
             // 搜索框不为空时进行搜索
             if (searchTerm) {
                 wordItems.forEach(item => {
-                    const wordElement = item.querySelector('.list-item-word');
-                    const definitionElement = item.querySelector('.list-item-definition');
+                    const wordElement = item.querySelector('.item-word');
+                    const definitionElement = item.querySelector('.item-definition');
                     const wordText = wordElement.textContent;
                     const definitionText = definitionElement.textContent;
                     const hasMatch = wordText.toLowerCase().indexOf(searchTerm) !== -1 || 
@@ -1386,7 +1415,7 @@
         // ========== 进度条功能 ==========
         // 更新进度条 - 元素ID同步
         function updateProgressBar() {
-            const progressBar = document.getElementById('progress-bar');
+            const progressBar = document.getElementById('progress-fill');
             if (currentWords.length > 0) {
                 progressBar.style.width = `${((currentIndex + 1) / currentWords.length) * 100}%`;
             } else {
@@ -1397,7 +1426,7 @@
         // ========== 列表信息功能 ==========
         // 更新列表统计信息 - 元素ID同步
         function updateListStats() {
-            document.getElementById('sidebar-list-stats').textContent = 
+            document.getElementById('sidebar-info').textContent = 
                 `${activeList} (${currentWords.length} words)`;
         }
         
@@ -1422,7 +1451,7 @@
             wordListModal.classList.add('active');
             
             // 显示搜索框
-            const searchInput = document.getElementById('search-input');
+            const searchInput = document.getElementById('search');
             if (searchInput) {
                 searchInput.style.display = 'block';
             }
@@ -1433,7 +1462,7 @@
             wordListModal.classList.remove('active');
             
             // 隐藏搜索框
-            const searchInput = document.getElementById('search-input');
+            const searchInput = document.getElementById('search');
             if (searchInput) {
                 searchInput.style.display = 'none';
             }
@@ -1456,7 +1485,7 @@
             `;
             
             // 同步搜索框状态
-            const searchInput = document.getElementById('search-input');
+            const searchInput = document.getElementById('search');
             if (searchInput && searchInput.value.trim()) {
                 // 如果搜索框有内容，立即执行搜索
                 setTimeout(handleSearch, 0);
@@ -1478,11 +1507,11 @@
             
             words.forEach((wordObj, index) => {
                 const wordItem = document.createElement('div');
-                let className = 'word-list-modal-item';
+                let className = 'modal-item';
                 wordItem.className = className; // 类名同步
                 wordItem.innerHTML = `
-                    <div class="list-item-word">${wordObj.word}</div> <!-- 类名同步 -->
-                    <div class="list-item-definition">${wordObj.definition}</div> <!-- 类名同步 -->
+                    <div class="item-word">${wordObj.word}</div> <!-- 类名同步 -->
+                    <div class="item-definition">${wordObj.definition}</div> <!-- 类名同步 -->
                 `;
                 
                 // 点击单词项可以快速跳转到该单词 - 逻辑不变
@@ -1527,9 +1556,9 @@
             
             // 加载单词 - 逻辑不变
             if (currentWords.length === 0) {
-                document.getElementById('current-word').textContent = 'No words in this list';
-                document.getElementById('current-definition').innerHTML = '';
-                document.getElementById('word-index-counter').textContent = '';
+                document.getElementById('word').textContent = 'No words in this list';
+                document.getElementById('definition').innerHTML = '';
+                document.getElementById('counter').textContent = '';
             } else {
                 currentWords = isOrdered ? [...currentWords] : [...currentWords].sort(() => Math.random() - 0.5);
                 displayCurrentWord();
@@ -1541,8 +1570,8 @@
         // 切换顺序/随机模式 - 元素类名同步
         function setOrder(orderType) {
             isOrdered = orderType === 'ordered';
-            // 类名同步为.order-toggle-btn
-            document.querySelectorAll('.order-toggle-btn').forEach(btn => {
+            // 类名同步为.btn-order
+            document.querySelectorAll('.btn-order').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.order === orderType);
             });
             
@@ -1553,11 +1582,11 @@
         // ========== 按钮状态管理 ==========
         // 更新按钮状态 - 元素ID同步
         function updateButtonStates() {
-            const prevBtn = document.getElementById('btn-prev-word');
-            const nextBtn = document.getElementById('btn-next-word');
-            const showBtn = document.getElementById('btn-show-definition');
+            const prevBtn = document.getElementById('btn-prev');
+            const nextBtn = document.getElementById('btn-next');
+            const showBtn = document.getElementById('btn-toggle');
             const hasWords = currentWords.length > 0;
-            const wordEl = document.getElementById('current-word');
+            const wordEl = document.getElementById('word');
             const isCompleted = wordEl && wordEl.textContent === 'Congratulations!';
             
             // 处理上一个按钮 - 逻辑不变
@@ -1586,14 +1615,38 @@
             }
         }
         
+        // 语音播报功能相关变量和函数
+        let voices = [];
+        
+        // 初始化语音列表
+        function initVoices() {
+            voices = window.speechSynthesis.getVoices();
+        }
+        
+        // 监听语音列表变化
+        window.speechSynthesis.onvoiceschanged = initVoices;
+        
+        // 初始化语音
+        initVoices();
+        
+        // 语音播报函数
+        function speak(text, accent) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            // 尝试找到匹配的语音，如果找不到则使用默认语音
+            utterance.voice = voices.find(v => v.lang === accent) || voices[0];
+            utterance.lang = accent;
+            window.speechSynthesis.speak(utterance);
+        }
+        
         // ========== 单词显示功能 ==========
         // 显示当前单词 - 元素ID同步
         function displayCurrentWord() {
-            const wordEl = document.getElementById('current-word');
-            const defEl = document.getElementById('current-definition');
-            const counterEl = document.getElementById('word-index-counter');
-            const defWrapper = document.querySelector('.definition-container'); // 类名同步
-            const showBtn = document.getElementById('btn-show-definition');
+            const wordEl = document.getElementById('word');
+            const defEl = document.getElementById('definition');
+            const counterEl = document.getElementById('counter');
+            const defWrapper = document.querySelector('.definition-area'); // 类名同步
+            const showBtn = document.getElementById('btn-toggle');
             
             if (!wordEl || !defEl || !counterEl) {
                 console.error('Required DOM elements not found');
@@ -1624,9 +1677,9 @@
         
         // 显示/隐藏定义（切换功能） - 逻辑不变
         function showDefinition() {
-            const defEl = document.getElementById('current-definition');
-            const showBtn = document.getElementById('btn-show-definition');
-            const wordEl = document.getElementById('current-word');
+            const defEl = document.getElementById('definition');
+            const showBtn = document.getElementById('btn-toggle');
+            const wordEl = document.getElementById('word');
             
             // 检查是否处于完成状态（显示Congratulations）
             const isCompleted = wordEl && wordEl.textContent === 'Congratulations!';
@@ -1645,8 +1698,11 @@
                 } else {
                     // 如果未显示，则渲染并显示释义内容
                     const defParts = currentWords[currentIndex].definition.split('；').filter(part => part.trim() !== '');
-                    const youdaoLink = `<a href="https://dict.youdao.com/result?word=${encodeURIComponent(currentWords[currentIndex].word)}&lang=en" target="_blank" style="color: var(--theme-pink); text-decoration: underline;">有道词典</a>`;
-                    defParts.push(youdaoLink);
+                    const word = currentWords[currentIndex].word;
+                    const youdaoLink = `<a href="https://dict.youdao.com/result?word=${encodeURIComponent(word)}&lang=en" target="_blank" class="word-definition-link word-youdao-link">有道词典</a>`;
+                    const usPronunciation = `<span class="word-pronunciation-container"><a href="javascript:void(0)" onclick="speak('${word}', 'en-US')" class="word-definition-link word-pronunciation-btn">英式发音</a></span>`;
+                    const ukPronunciation = `<span class="word-pronunciation-container"><a href="javascript:void(0)" onclick="speak('${word}', 'en-GB')" class="word-definition-link word-pronunciation-btn">美式发音</a></span>`;
+                    defParts.push(youdaoLink + usPronunciation + ukPronunciation);
                     defEl.innerHTML = defParts.join('；<br>');
                     defEl.classList.add('visible');
                     if (showBtn) showBtn.textContent = 'Conceal';
@@ -1656,7 +1712,7 @@
         
         // 上一个单词 - 元素ID同步
         function prevWord() {
-            const wordEl = document.getElementById('current-word');
+            const wordEl = document.getElementById('word');
             if (!wordEl) return;
             
             // 检查是否正在显示完成信息
@@ -1678,9 +1734,9 @@
                     displayCurrentWord();
                 } else {
                     // 已经是最后一个单词，显示完成信息
-                    const wordEl = document.getElementById('current-word');
-                    const defEl = document.getElementById('current-definition');
-                    const counterEl = document.getElementById('word-index-counter');
+                    const wordEl = document.getElementById('word');
+                    const defEl = document.getElementById('definition');
+                    const counterEl = document.getElementById('counter');
                     
                     if (wordEl && defEl && counterEl) {
                         wordEl.textContent = 'Congratulations!';
@@ -1689,7 +1745,7 @@
                         counterEl.textContent = `100%`;
                         
                         // 更新进度条为100%
-                        document.getElementById('progress-bar').style.width = '100%';
+                        document.getElementById('progress-fill').style.width = '100%';
                         
                         updateButtonStates();
                     }
@@ -1718,8 +1774,8 @@
                 });
             });
             
-            // 绑定顺序切换事件 - 类名同步为.order-toggle-btn
-            document.querySelectorAll('.order-toggle-btn').forEach(btn => {
+            // 绑定顺序切换事件 - 类名同步为.btn-order
+            document.querySelectorAll('.btn-order').forEach(btn => {
                 btn.addEventListener('click', () => {
                     console.log('Order button clicked:', btn.dataset.order);
                     setOrder(btn.dataset.order);
@@ -1727,13 +1783,16 @@
             });
             
             // 绑定功能按钮事件 - 元素ID同步
-            const prevBtn = document.getElementById('btn-prev-word');
-            const showBtn = document.getElementById('btn-show-definition');
-            const nextBtn = document.getElementById('btn-next-word');
+            const prevBtn = document.getElementById('btn-prev');
+            const showBtn = document.getElementById('btn-toggle');
+            const nextBtn = document.getElementById('btn-next');
             
             if (prevBtn) prevBtn.addEventListener('click', prevWord);
             if (showBtn) showBtn.addEventListener('click', showDefinition);
             if (nextBtn) nextBtn.addEventListener('click', nextWord);
+            
+            // 让speak函数可以通过onclick属性访问
+            window.speak = speak;
             
             // 绑定单词列表弹窗按钮事件 - 变量名同步
             if (wordListModalBtn) {
@@ -1796,15 +1855,15 @@
             
             // 默认乱序设置 - 逻辑不变
             isOrdered = false; // 设为乱序模式
-            document.querySelector('.order-toggle-btn[data-order="disordered"]').classList.add('active'); // 激活乱序按钮
-            document.querySelector('.order-toggle-btn[data-order="ordered"]').classList.remove('active'); // 取消顺序按钮激活
+            document.querySelector('.btn-order[data-order="disordered"]').classList.add('active'); // 激活乱序按钮
+            document.querySelector('.btn-order[data-order="ordered"]').classList.remove('active'); // 取消顺序按钮激活
             currentWords = [...wordLists[activeList]].sort(() => Math.random() - 0.5); // 加载乱序单词
             
             // 初始化显示 - 逻辑不变
             if (currentWords.length > 0) {
                 displayCurrentWord();
             } else {
-                const wordEl = document.getElementById('current-word');
+                const wordEl = document.getElementById('word');
                 if (wordEl) {
                     wordEl.textContent = 'No words in this list';
                 }
