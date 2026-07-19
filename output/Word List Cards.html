@@ -6,52 +6,51 @@
     <title>单词列表 | Word Lists</title>
     <style>
         /* ============================== 1. 基础定义 ============================== */
-        /* 1.1 浅色模式变量 - 热带日落大胆配色 */
+        /* 1.1 浅色模式变量 - 基础主题样式 */
         :root {
-            /* 主题色 - 热带日落系 */
-            --theme-primary: #FF6B6B;
-            --theme-secondary: #4ECDC4;
-            --theme-accent: #A855F7;
-            --theme-coral: #FF6B6B;
-            --theme-teal: #4ECDC4;
-            --theme-purple: #A855F7;
+            /* 主题色 */
+            --theme-pink: #ff99cc;
+            --theme-blue: #42a5f5;
             
-            /* 背景色 - 暖米白系 */
-            --page-bg: #FFF8F0;
-            --card-bg: #FFFFFF;
-            --sidebar-list-bg: #FFE8D6;
+            /* 特殊用途变量 */
+            /* 模态框相关（与暗模式保持结构一致） */
             
-            /* 文本色 - 深色确保对比度 */
-            --text-primary: #1A1A2E;
-            --text-secondary: #4A4A6A;
-            --btn-text: #FFFFFF;
+            /* 背景色 */
+            --page-bg: #fef8ed;
+            --card-bg: white;
+            --sidebar-list-bg: #fef8ed;
+            
+            /* 文本色 */
+            --text-primary: #333;
+            --text-secondary: #666;
+            --btn-text: #000;
             
             /* 进度条 */
-            --progress-fill-bg: #FFE8D6;
+            --progress-fill-bg: #f1f1f1;
             
-            /* 功能按钮 - 热带系 */
-            --btn-prev-bg: #FFE8D6;
-            --btn-prev-hover: #FFD4B8;
-            --btn-show-def-hover: #FF5252;
-            --btn-next-hover: #3DBDB5;
+            /* 功能按钮 */
+            --btn-prev-bg: #cccccc;
+            --btn-prev-hover: #999999;
+            --btn-show-def-hover: #ff6699;
+            --btn-next-hover: #1876F3;
             
             /* 侧边栏按钮 */
-            --order-toggle-disordered: #FFE8D6;
-            --order-toggle-disordered-hover: #FFD4B8;
-            --order-toggle-ordered: #D4F5F3;
-            --order-toggle-ordered-hover: #A8E6E2;
-            --list-select-btn-active-bg: #FFFFFF;
-            --list-select-btn-active-text: #1A1A2E;
+            --order-toggle-disordered: var(--btn-prev-bg);
+            --order-toggle-disordered-hover: var(--btn-prev-bg);
+            --order-toggle-ordered: #b7e4c7;
+            --order-toggle-ordered-hover: #a7f3d0;
+            --list-select-btn-active-bg: var(--card-bg);
+            --list-select-btn-active-text: #333;
             
             /* 界面元素 */
-            --border-color: #FFD4B8;
-            --shadow-primary: 0 8px 24px rgba(255, 107, 107, 0.15);
-            --shadow-secondary: 0 4px 12px rgba(255, 107, 107, 0.08);
+            --border-color: #ccc;
+            --shadow-primary: 0 6px 12px rgba(0,0,0,0.05);
+            --shadow-secondary: 0 4px 8px rgba(0,0,0,0.02);
             
             /* 滚动条 */
-            --scrollbar-track: #FFF8F0;
-            --scrollbar-thumb: #FFD4B8;
-            --scrollbar-thumb-hover: #FF6B6B;
+            --scrollbar-track: #f1f1f1;
+            --scrollbar-thumb: #bbb;
+            --scrollbar-thumb-hover: #999;
             
             /* 过渡动画变量（鼠标点击位置、扩散半径） */
             --x: 0px;
@@ -59,52 +58,52 @@
             --r: 0px;
         }
 
-        /* 1.2 深色模式变量 - 深海蓝紫 */
+        /* 1.2 深色模式变量 */
         :root.dark {
-            /* 主题色 - 亮热带色 */
-            --theme-primary: #FF8A8A;
-            --theme-secondary: #6EE7E7;
-            --theme-accent: #C084FC;
-            --theme-coral: #FF8A8A;
-            --theme-teal: #6EE7E7;
-            --theme-purple: #C084FC;
+            /* 主题色 */
+            --theme-pink: #d64187;
+            --theme-blue: #2563eb;
             
-            /* 背景色 - 深海蓝紫 */
-            --page-bg: #0D1B2A;
-            --card-bg: #1B263B;
-            --sidebar-list-bg: #162032;
+            /* 特殊用途变量 */
+            /* 模态框相关 */
+            --modal-dark-bg: rgba(255, 255, 255, 0.1);
             
-            /* 文本色 - 亮色确保对比度 */
-            --text-primary: #F0F4F8;
-            --text-secondary: #B8C5D6;
-            --btn-text: #0D1B2A;
+            /* 背景色 */
+            --page-bg: #2d2b3a;
+            --card-bg: #3a384c;
+            --sidebar-list-bg: #2d2b3a;
+            
+            /* 文本色 */
+            --text-primary: #f0f0f0;
+            --text-secondary: #ddd;
+            --btn-text: white;
             
             /* 进度条 */
-            --progress-fill-bg: #162032;
+            --progress-fill-bg: #4a485c;
             
-            /* 功能按钮 - 亮热带系 */
-            --btn-prev-bg: #2D3E52;
-            --btn-prev-hover: #3D4F66;
-            --btn-show-def-hover: #FF6B6B;
-            --btn-next-hover: #4ECDC4;
+            /* 功能按钮 */
+            --btn-prev-bg: #555;
+            --btn-prev-hover: #777;
+            --btn-show-def-hover: #b8326d;
+            --btn-next-hover: #1d4ed8;
             
             /* 侧边栏按钮 */
-            --order-toggle-disordered: #2D3E52;
-            --order-toggle-disordered-hover: #3D4F66;
-            --order-toggle-ordered: #1E4A5F;
-            --order-toggle-ordered-hover: #2A5A73;
-            --list-select-btn-active-bg: #1B263B;
-            --list-select-btn-active-text: #F0F4F8;
+            --order-toggle-disordered: var(--btn-prev-bg);
+            --order-toggle-disordered-hover: var(--btn-prev-bg);
+            --order-toggle-ordered: #166534;
+            --order-toggle-ordered-hover: #14532d;
+            --list-select-btn-active-bg: #3a384c;
+            --list-select-btn-active-text: #fff;
             
             /* 界面元素 */
-            --border-color: #2D3E52;
-            --shadow-primary: 0 8px 24px rgba(78, 205, 196, 0.2);
-            --shadow-secondary: 0 4px 12px rgba(78, 205, 196, 0.1);
+            --border-color: #555;
+            --shadow-primary: 0 6px 12px rgba(255, 255, 255, 0.05);
+            --shadow-secondary: 0 4px 8px rgba(255, 255, 255, 0.02);
             
             /* 滚动条 */
-            --scrollbar-track: #0D1B2A;
-            --scrollbar-thumb: #2D3E52;
-            --scrollbar-thumb-hover: #4ECDC4;
+            --scrollbar-track: #4a485c;
+            --scrollbar-thumb: #666;
+            --scrollbar-thumb-hover: #888;
         }
 
         /* 1.3 模式切换过渡动画（依赖变量，紧跟变量定义） */
@@ -159,7 +158,7 @@
             left: 50%;
             transform: translateX(-50%);
             z-index: 9999;
-            border: 3px solid var(--theme-coral);
+            border: 3px solid var(--theme-pink);
             border-radius: 15px;
             background: transparent;
             color: var(--text-primary);
@@ -185,7 +184,7 @@
             font-style: italic;
         }
         .search-match-char {
-            color: var(--theme-coral);
+            color: var(--theme-pink);
             font-weight: bold;
             transition:
                 transform 0.2s ease,
@@ -214,12 +213,12 @@
         }
         /* 有道词典链接样式 */
         .word-youdao-link {
-            color: var(--theme-coral);
+            color: var(--theme-pink);
             text-decoration: underline;
         }
         /* 发音按钮链接样式 */
         .word-pronunciation-btn {
-            color: var(--theme-coral);
+            color: var(--theme-pink);
             text-decoration: none;
         }
         /* 发音按钮容器样式 */
@@ -289,7 +288,7 @@
             transform: scale(1.05);
         }
         .btn.active {
-            background-color: var(--theme-coral);
+            background-color: var(--theme-pink);
             transition:
                 transform 0.2s ease,
                 opacity 0.2s ease,
@@ -404,16 +403,16 @@
             background-color: var(--btn-prev-hover);
         }
         #btn-toggle {
-            background-color: var(--theme-coral);
+            background-color: var(--theme-pink);
         }
         #btn-toggle:hover {
             background-color: var(--btn-show-def-hover);
         }
         #btn-next {
-            background-color: var(--theme-coral);
+            background-color: var(--theme-blue);
         }
         #btn-next:hover {
-            background-color: #EA580C;
+            background-color: var(--btn-next-hover);
         }
 
         /* ============================== 4. 组件样式：页面布局 ============================== */
@@ -525,7 +524,7 @@
         }
         .progress-fill {
             height: 100%;
-            background-color: var(--theme-coral);
+            background-color: var(--theme-pink);
             width: 0%;
             transition: width 0.2s ease;
         }
@@ -638,7 +637,7 @@
         }
         body.focus-mode .progress-fill {
             height: 100%;
-            background-color: var(--theme-coral);
+            background-color: var(--theme-pink);
             transition: width 0.2s ease;
         }
         body.focus-mode .counter {
