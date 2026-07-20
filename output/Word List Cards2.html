@@ -1747,6 +1747,10 @@
         
         // 语音播报功能相关变量和函数
         let voices = [];
+
+        function normalizeLanguageTag(language) {
+            return String(language || '').replace('_', '-').toLowerCase();
+        }
         
         // 初始化语音列表
         function initVoices() {
@@ -1761,12 +1765,40 @@
         
         // 语音播报函数
         function speak(text, accent) {
+            if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
+                console.warn('This browser does not support speech synthesis.');
+                return;
+            }
+
+            // 某些浏览器会延迟提供语音列表，点击时再刷新一次。
+            const availableVoices = window.speechSynthesis.getVoices();
+            if (availableVoices.length > 0) voices = availableVoices;
+
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
-            // 尝试找到匹配的语音，如果找不到则使用默认语音
-            utterance.voice = voices.find(v => v.lang === accent) || voices[0];
+            const requestedLanguage = normalizeLanguageTag(accent);
+            // 优先使用指定地区；找不到时只回退到其他英语语音。
+            utterance.voice = voices.find(v => normalizeLanguageTag(v.lang) === requestedLanguage)
+                || voices.find(v => normalizeLanguageTag(v.lang).startsWith('en-'))
+                || null;
             utterance.lang = accent;
             window.speechSynthesis.speak(utterance);
+        }
+
+        function createPronunciationLink(word, accent, label) {
+            const container = document.createElement('span');
+            container.className = 'word-pronunciation-container';
+
+            const link = document.createElement('a');
+            link.href = 'javascript:void(0)';
+            link.className = 'word-definition-link word-pronunciation-btn';
+            link.dataset.word = word;
+            link.dataset.accent = accent;
+            link.setAttribute('onclick', 'speak(this.dataset.word, this.dataset.accent)');
+            link.textContent = label;
+
+            container.appendChild(link);
+            return container.outerHTML;
         }
         
         // ========== 单词显示功能 ==========
@@ -1830,8 +1862,8 @@
                     const defParts = currentWords[currentIndex].definition.split('；').filter(part => part.trim() !== '');
                     const word = currentWords[currentIndex].word;
                     const youdaoLink = `<a href="https://dict.youdao.com/result?word=${encodeURIComponent(word)}&lang=en" target="_blank" class="word-definition-link word-youdao-link">有道词典</a>`;
-                    const usPronunciation = `<span class="word-pronunciation-container"><a href="javascript:void(0)" onclick="speak('${word}', 'en-US')" class="word-definition-link word-pronunciation-btn">英式发音</a></span>`;
-                    const ukPronunciation = `<span class="word-pronunciation-container"><a href="javascript:void(0)" onclick="speak('${word}', 'en-GB')" class="word-definition-link word-pronunciation-btn">美式发音</a></span>`;
+                    const ukPronunciation = createPronunciationLink(word, 'en-GB', '英式发音');
+                    const usPronunciation = createPronunciationLink(word, 'en-US', '美式发音');
                     defParts.push(youdaoLink + usPronunciation + ukPronunciation);
                     defEl.innerHTML = defParts.join('；<br>');
                     defEl.classList.add('visible');
